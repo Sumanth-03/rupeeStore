@@ -36,8 +36,17 @@ function Product() {
   const [openSelect, setOpenSelect] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState({});
   const [paymentStatus, setPaymentStatus] = useState('');
+  const [orderDetails, setOrderDetails] = useState({
+    expairy:'Expires on February 22, 2025',
+    code:'TF601XVHVJ',
+    pts:'1',
+    order_id:'22336070437',
+    date:'1 Nov, 12:05 PM',
+    deliveryDate:'Jan 01, 2025',
+  })
   const [productDeliverable, setProductDeliverable] = useState(true);
   const [rewardApplied,setRewardApplied] = useState(false)
+  const [rewardAmountApplaied,setRewardAmountApplaied] = useState(0)
   const navigate = useNavigate();
   const offerId = sessionStorage.getItem('id');
   const queryParams = new URLSearchParams(window.location.search);
@@ -64,8 +73,10 @@ function Product() {
       console.log("getpayres",response.data)
       if(response?.data?.status === 200){
         sessionStorage.setItem('coupon',JSON.stringify(response.data.data))
-       //setPaymentStatus('sucess')
-       //setModal('success')
+        setOrderDetails(response.data.data)
+        setPaymentStatus('sucess')
+        setModal('success')
+        setIsloading(false);
       }
       else{
         if(!modal){
@@ -237,6 +248,24 @@ function Product() {
         }, 3000);
     }
   }
+
+  useEffect (()=>{
+    let price
+    
+    if(offerdeets?.offer_type === '2'){
+      price = (offerdeets?.original_price-((offerdeets?.offer_percentage*offerdeets?.original_price)/100)).toFixed(0)
+
+    }else{
+      price = Number(offerdeets?.original_price-offerdeets?.offer_percentage).toFixed(0)
+    }
+    if (price>=walpoints){
+      setRewardAmountApplaied(walpoints)
+    }else{
+      setRewardAmountApplaied(price)
+    }
+
+  },[walpoints,offerdeets])
+
   const CustomCard = ({icon,iconBg, text, children}) => {
     return(
       <div className={`mt-3 flex justify-between items-center p-3 my-2 border border-gray-300 rounded-2xl shadow-sm bg-white ${ text=== 'Use ₹100 Rewards' && rewardApplied ? 'bg-gradient-to-l from-[#C8EEC9] from-[3rem] via-[#EFFAEF] via-[6rem] to-transparent border-2 border-[#00B10266]' : ''}`}>
@@ -325,10 +354,10 @@ function Product() {
         { !productDeliverable && 
         <>
           <p className='text-center text-base font-medium text-customGray font-sans '>
-            Expires on February 22, 2025
+            {orderDetails?.expairy}
           </p>
           <div className='my-2 mx-3 border-2 border-dashed border-black rounded-full flex flex-row items-center justify-between p-1'>
-          <span className='px-3 font-medium text-xl text-customGray'>TF601XVHVJ</span>
+          <span className='px-3 font-medium text-xl text-customGray'>{orderDetails?.code}</span>
           <Button variant='text' className='flex gap-2 items-center'>
             <span className='text-sm font-light'>Copy Code</span>
             <img src={copy}></img>
@@ -340,13 +369,13 @@ function Product() {
        </div>
         <div className={`relative flex flex-col border rounded-xl p-3 my-2 shadow-md mx-3 ${productDeliverable ? 'mb-12' : 'mb-5'} text-black`}>
           <h1 className='font-semibold text-lg '>Order Details</h1>
-          <p className=''>Availed for 1 pts</p>
+          <p className=''>{`Availed for ${orderDetails.pts} pts`}</p>
           <div className='flex font-normal justify-between'>
-          <span>Order ID : 22336070437</span>
-          <span>1 Nov, 12:05 PM</span>
+          <span>Order ID : {orderDetails?.order_id}</span>
+          <span>{orderDetails?.date}</span>
           </div>
           {productDeliverable && 
-          <div className='absolute bottom-0 translate-y-8 flex gap-1'><img src={deleveryTick} className='w-4'></img>Expected delivery date Jan 01, 2025</div>
+          <div className='absolute bottom-0 translate-y-8 flex gap-1'><img src={deleveryTick} className='w-4'></img> Expected delivery date  {orderDetails?.deliveryDate}</div>
           }
         </div>
       </>
@@ -379,8 +408,9 @@ function Product() {
           <Button onClick={()=>setCouponDailog(true)} className='bg-white border-none shadow-none w-fit p-0'><img src={backdark} className='rotate-180 w-3'></img></Button>
           }
           </CustomCard>
-        <CustomCard icon={coin} iconBg='#FCF8DF' text='Use ₹100 Rewards'>
+        <CustomCard icon={coin} iconBg='#FCF8DF' text={`${rewardAmountApplaied>0 ? `Use ₹ ${rewardAmountApplaied} Rewards` : 'Use Rewards'}`}>
           <Switch
+          disabled = {rewardAmountApplaied === 0}
           checked={rewardApplied}
           onClick={()=>setRewardApplied((pre)=>!pre)}
           id="custom-switch-component"
@@ -456,9 +486,9 @@ function Product() {
             <span className="font-bold line-through pr-2 opacity-40">₹{ Number(offerdeets?.original_price).toFixed(0)}</span>
             <div className="flex text-2xl font-bold w-fit text-customGray bg-white">
             {(offerdeets?.offer_type === '2')?
-              <span>₹ {(offerdeets?.original_price-((offerdeets?.offer_percentage*offerdeets?.original_price)/100)).toFixed(0)}</span>
+              <span>₹ {(offerdeets?.original_price-((offerdeets?.offer_percentage*offerdeets?.original_price)/100)).toFixed(0)-(rewardApplied ? rewardAmountApplaied : 0)}</span>
               :
-              <span>₹ {Number(offerdeets?.original_price-offerdeets?.offer_percentage).toFixed(0)}</span>
+              <span>₹ {Number(offerdeets?.original_price-offerdeets?.offer_percentage).toFixed(0)-(rewardApplied ? rewardAmountApplaied : 0)}</span>
             }
             </div>
           </div>
@@ -541,6 +571,8 @@ function Product() {
     setIsLoading = {setIsloading}
     handlePay = {handlePay}
     data={{
+      rewardApplied : 
+      rewardApplied ? rewardAmountApplaied : 0,
       original_price: offerdeets?.original_price,
       discounted_price: 
         offerdeets?.offer_type !== '2'

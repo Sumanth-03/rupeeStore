@@ -37,8 +37,8 @@ export default function CouponDialog({ open, setOpen, setCoupon }) {
             Apply
           </Button>
         </div>
-        <CouponCard code="YLYDEAL" discount="800" handleApply={handleApply}/>
-        <CouponCard code="IB00324" discount="1,000" handleApply={handleApply}/>
+        {/* <CouponCard code="YLYDEAL" discount="800" handleApply={handleApply}/>
+        <CouponCard code="IB00324" discount="1,000" handleApply={handleApply}/> */}
       </DialogBody>
 
     </Dialog>

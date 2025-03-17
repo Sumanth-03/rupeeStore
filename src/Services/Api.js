@@ -2,6 +2,9 @@ import axios from "axios"
 
 const apiBaseUrl = "https://onerupee-store-api-stage.azurewebsites.net/api"; //"http://localhost:9000/api"; //"https://onerupee-store-api-stage.azurewebsites.net/api";
       //"https://onerupee-store-api-prod.azurewebsites.net/api";
+
+const apiBaseUrlCheggout = 'https://restapi-stage.cheggout.com/api/v1.3/GetScratchCardDetails?id=CAMPAIGN_HOTDEALS_POINTS_FEB25'; //'https://restapi.cheggout.com/api/v1.3/GetScratchCardDetails?id=CAMPAIGN_HOTDEALS_POINTS_FEB25';
+
 const makeApiCall = async (url, data) => {
     let bodyData = {
         url: apiBaseUrl + "/" + url,
@@ -59,6 +62,20 @@ const makeApiCallWithAuth = async (url, data) => {
     return axios(bodyData)
 }
 
+const makeApiGetCallWithAuthCheggout = async () => {
+    const token = sessionStorage.getItem('token');
+
+    let bodyData = {
+        url: apiBaseUrlCheggout,
+        method: "GET",
+        headers: {
+            'accept': 'application/json',
+            'Authorization': 'Bearer '+ token,
+        },
+    }
+    return axios(bodyData)
+}
 
 
-export { makeApiCall, makeApiCallGet, makeApiGetCallWithAuth, makeApiCallWithAuth}
+
+export { makeApiCall, makeApiCallGet, makeApiGetCallWithAuth, makeApiCallWithAuth, makeApiGetCallWithAuthCheggout}

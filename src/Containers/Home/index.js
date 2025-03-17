@@ -13,6 +13,64 @@ import {isMobile} from 'react-device-detect';
 import wrongSign from '../../Assets/wrongSign.svg'
 import "./style.css"
 
+import {jwtDecode} from 'jwt-decode';
+
+const data = [
+  {
+    label: "All ",
+    value: "html",
+    image: Allbrands,
+    desc: `It really matters and then like it really doesn't matter.
+    What matters is the people who are sparked by it. And the people 
+    who are like offended by it, it doesn't matter.`,
+  },
+  {
+    label: "Grocery",
+    value: "react",
+    image: Grocery,
+    desc: `Because it's about motivating the doers. Because I'm here
+    to follow my dreams and inspire other people to follow their dreams, too.`,
+  },
+  {
+    label: "Groccery",
+    value: "reaxct",
+    image: Grocery,
+    desc: `Because it'ss about motivating the doers. Because I'm here
+    to follow my dreams and inspire other people to follow their dreams, too.`,
+  },
+  {
+    label: "Laptops",
+    value: "vue",
+    image: laptop,
+    desc: `We're not always in the position that we want to be at.
+    We're constantly growing. We're constantly making mistakes. We're
+    constantly trying to express ourselves and actualize our dreams.`,
+  },
+  {
+    label: "Mobiles",
+    value: "angular",
+    image: Grocery,
+    desc: `Because it's about motivating the doers. Because I'm here
+    to follow my dreams and inspire other people to follow their dreams, too.`,
+  },
+  {
+    label: "Music",
+    value: "svelte",
+    image: laptop,
+    desc: `We're not always in the position that we want to be at.
+    We're constantly growing. We're constantly making mistakes. We're
+    constantly trying to express ourselves and actualize our dreams.`,
+  },
+  {
+    label: "Musiic",
+    value: "sveate",
+    image: laptop,
+    desc: `We're nots always in the position that we want to be at.
+    We're constantly growing. We're constantly making mistakes. We're
+    constantly trying to express ourselves and actualize our dreams.`,
+  },
+];
+
 function Home() {
 
   const [searchopen, setSearchopen] = useState(false)
@@ -20,6 +78,8 @@ function Home() {
   const [alloffers, setAlloffers] = useState([]);
   const [luma, setLuma] = useState(true)
   const [allCategories, setAllCategories] = useState([]);
+  const [filterCat, setFilterCat] = useState([]);
+
   const [bannerfile, setBannerfile] = useState([]);
   const [filterValue, setFilterValue] = useState([]);
   const [modal, setModal] = useState('')
@@ -130,6 +190,25 @@ function Home() {
     }
   },[secondleg]);
 
+  
+  useEffect(() => {
+    if(filterValue){
+      const filterCategory = allCategories?.filter((item) => {  
+          return filterValue.some(t => t.offer_category === item.id)
+      })
+      //console.log("filterCategory", filterCategory)
+      setFilterCat(filterCategory)
+    }
+  },[filterValue, allCategories]);
+
+  let decoded = '';
+  if(token){
+      decoded = jwtDecode(token);
+  }
+  else{
+    decoded = jwtDecode(sessionStorage.getItem('token'));
+  }
+
   const handleChange = (data) => {
     const filterBySearch = alloffers?.filter((item) => { 
         if (item.product_name.toLowerCase() 
@@ -168,174 +247,115 @@ function Home() {
     navigate('/exitpwa')
   }
 
-  const data = [
-      {
-        label: "All ",
-        value: "html",
-        image: Allbrands,
-        desc: `It really matters and then like it really doesn't matter.
-        What matters is the people who are sparked by it. And the people 
-        who are like offended by it, it doesn't matter.`,
-      },
-      {
-        label: "Grocery",
-        value: "react",
-        image: Grocery,
-        desc: `Because it's about motivating the doers. Because I'm here
-        to follow my dreams and inspire other people to follow their dreams, too.`,
-      },
-      {
-        label: "Groccery",
-        value: "reaxct",
-        image: Grocery,
-        desc: `Because it'ss about motivating the doers. Because I'm here
-        to follow my dreams and inspire other people to follow their dreams, too.`,
-      },
-      {
-        label: "Laptops",
-        value: "vue",
-        image: laptop,
-        desc: `We're not always in the position that we want to be at.
-        We're constantly growing. We're constantly making mistakes. We're
-        constantly trying to express ourselves and actualize our dreams.`,
-      },
-      {
-        label: "Mobiles",
-        value: "angular",
-        image: Grocery,
-        desc: `Because it's about motivating the doers. Because I'm here
-        to follow my dreams and inspire other people to follow their dreams, too.`,
-      },
-      {
-        label: "Music",
-        value: "svelte",
-        image: laptop,
-        desc: `We're not always in the position that we want to be at.
-        We're constantly growing. We're constantly making mistakes. We're
-        constantly trying to express ourselves and actualize our dreams.`,
-      },
-      {
-        label: "Musiic",
-        value: "sveate",
-        image: laptop,
-        desc: `We're nots always in the position that we want to be at.
-        We're constantly growing. We're constantly making mistakes. We're
-        constantly trying to express ourselves and actualize our dreams.`,
-      },
-  ];
-
   const handleScroll = (event) => {
-      if(event.target.scrollTop.toFixed() > 160 && !bannerscroll2){
+       if(event.target.scrollTop.toFixed() > 160 && !bannerscroll2){
         setBannerscroll2(false)
-        setBannerscroll(true)
-        
-        if(!apiscroll){
-          makeApiCallWithAuth('trackEvent', {event: 1 })
-          .then((response) => {
-            console.log("resp",response.data)
-          })
-          .catch((e) => console.log("err", e))
-          setApiscroll(true)
-        }
-      }
-      else{
-        setBannerscroll(false)
-        setBannerscroll2(false)
-      }
+          if(!apiscroll){
+            makeApiCallWithAuth('trackEvent', {event: 1 })
+              .then((response) => {
+                console.log("resp",response.data)
+              
+              })
+              .catch((e) => console.log("err", e))
+                  setApiscroll(true)
+                }
+          }
+          else{
+            setBannerscroll2(false)
+          }
      };
-
-    const handleScroll2 = (event) => {
+     const handleScroll2 = (event) => {
       if(event.target.scrollTop.toFixed() < 1){
          setBannerscroll2(true)
-          setBannerscroll(false)
-      }
-      else{
-        // setBannerscroll(true)
-      }
+     }
+     else{
+      //setBannerscroll(true)
+     }
     };
 
-  return (
-    <div id="parent" className={`container max-w-full ${bannerscroll?'':'overflow-scroll'}`} onScroll={handleScroll} style={{ height: `calc(100vh - 10px)` }}>
-      <div className="sticky top-0 z-30 grid grid-rows-2 grid-cols-12 grid-flow-col gap-1 h-16 bg-white rounded-b-xl border-b-1">
+    const items = filterValue.filter((item)=>{
+      return item.offer_category===activeTab
+    })
 
-       <div className="row-span-2 row-start-1 col-start-1 col-span-4 self-center z-10 pl-2 flex justify-start pt-2" >
-        {isMobile?
-        <Link to='/exitpwa'><img src={backdark} className="h-6 w-full mt-1" alt=""/> </Link>
-        : 
-        <Link to={sessionStorage.getItem('refferer')}><img src={backdark} className="h-6 w-full mt-1" alt=""/> </Link> 
-         }
-        
-       <div className="row-span-2 row-start-1 items-center text-slate-700 text-2xl font-semibold flex justify-start pl-2"> Deals </div>
-       </div>
-       
-       <div className="row-span-2 col-start-5 col-span-8 flex items-center justify-end pr-3 gap-3">
-       {searchopen &&
-             <div className='col-span-6 w-full pt-0.5'>  
-               <SearchInput handleChange={handleChange}/>
-             </div>
-        }
-       <img src={Search} alt="search" onClick={()=>{setSearchopen(!searchopen)}}/>
-       <img src={Coupon} alt="coupon" onClick={()=>{navigate('/coupons')}}/>
-       </div>
-           
-      
-      </div>
-      
-      <div className="px-3 bg-transparent" style={{ height: `calc(100vh - 70px)` }}>
-        {!bannerscroll &&
-        <div className={`h-40  rounded-3xl flex justify-center ${isloading?'animate-pulse bg-green-100':'bg-white'}`}>
-          {bannerfile && 
-            (bannerfile?.banner_click_link === '0') ?
-            <img src={bannerfile?.file_data} className="animate-none rounded-3xl w-96" alt="" />
-            :
-            <Link to={'/exitpwa?launch='+bannerfile?.banner_click_link}><img src={bannerfile?.file_data} className="animate-none rounded-3xl w-96" alt="" />
-            </Link>
-          }       
+  return (
+    <Tabs value={activeTab} className="w-full">
+    <div id="parent" className={`container max-w-full relative`} onScroll={handleScroll} style={{ height: `calc(100vh - 10px)` , overflow: 'auto'}}>
+      <div className="sticky top-0 z-30 grid grid-rows-1 grid-cols-12 grid-flow-col gap-1 h-16 bg-white rounded-b-xl border-b-1">
+
+        <div className="row-span-1 row-start-1 col-start-1 col-span-5 self-center z-10 pl-2 flex justify-start pt-1" >
+          {isMobile?
+          <Link to='/exitpwa'><img src={backdark} className="h-6 w-full mt-1" alt=""/> </Link>
+          : 
+          <Link to={sessionStorage.getItem('refferer')}><img src={backdark} className="h-6 w-full mt-1" alt=""/> </Link> 
+          }
+          <div className="row-span-1 row-start-1 items-center text-slate-700 text-2xl font-semibold flex justify-start pl-2">Hot Deals </div>
         </div>
+        
+        <div className="row-span-1 col-start-6 col-span-8 flex items-center justify-end pr-3 gap-3">
+          {searchopen &&
+              <div className='col-span-6 w-full pt-0.5'>  
+                <SearchInput handleChange={handleChange}/>
+              </div>
+          }
+          {filterValue?.length > 50 && <img src={Search} alt="search" onClick={()=>{setSearchopen(!searchopen)}}/>}
+          <div className="flex">
+          {!searchopen && <div className='border-2  rounded-full p-1.5 border-[#27374D] font-semibold' onClick={()=>{navigate('/coupons')}}>My Deals</div>}
+          </div>
+        </div>
+      </div>
+        
+    <div className="px-3 bg-transparent">
+        
+      <div className={`h-40  rounded-3xl flex pb-2 justify-center ${isloading?'animate-pulse bg-green-100':'bg-white'}`}>
+        {bannerfile && 
+        (bannerfile?.banner_click_link === '0') ?
+        <img src={bannerfile?.file_data} className="animate-none rounded-3xl w-96" alt="" />
+        :
+        <Link to={'/exitpwa?launch='+bannerfile?.banner_click_link}><img src={bannerfile?.file_data} className="animate-none rounded-3xl w-96" alt="" />
+        </Link>
         }
-      
-      <div className="pt-0 relative sticky top-0">
-      <Tabs value={activeTab} className="absolute w-full">
-        <TabsHeader
-        className="rounded-none border-b border-blue-gray-50 bg-transparent p-0 overflow-x-auto my-3"
+      </div>
+      <TabsHeader
+        className="rounded-none border-b border-blue-gray-50 bg-transparent p-0 overflow-x-auto"
         indicatorProps={{
           className:
             "bg-transparent border-b-2 border-[#27374D] shadow-none rounded-none",
         }}
-        >
-          <Tab
+        
+      >
+        <Tab
             key={1}
             value={1}
             onClick={() => setActiveTab(1)}
-            className={activeTab === 1 ? "text-slate-700 text-sm font-normal" : "text-slate-300 opacity-80 text-sm font-normal"}
+            className={activeTab === 1 ? "text-slate-700 text-xs font-normal" : "text-slate-300 opacity-80 text-xs font-normal"}
           >
             <div className="w-16 h-16"><div className="flex justify-center"><img src={Allbrands} className="h-12 w-12 rounded-full" alt="log" /></div><span className="">All</span></div>
           </Tab>
-          {allCategories.map(({ category_name, id, file_data }) => (
-            <Tab
-              key={id}
-              value={id}
-              onClick={() => setActiveTab(id)}
-              className={activeTab === id ? "text-slate-700 text-sm font-normal" : "text-slate-300 opacity-80 text-sm font-normal"}
-            >
-              <div className="w-16 h-16"><div className="flex justify-center"><img src={file_data} className="h-12 w-12 rounded-full" alt="log" /></div><span className="">{category_name}</span></div>
-            </Tab>
-          ))}
-        </TabsHeader>
+        {filterCat.map(({ category_name, id, file_data }) => (
+          <Tab
+            key={id}
+            value={id}
+            onClick={() => setActiveTab(id)}
+            className={activeTab === id ? "text-slate-700 text-xs font-normal" : "text-slate-300 opacity-80 text-xs font-normal"}
+          >
+            <div className="w-20 h-16"><div className="flex justify-center"><img src={file_data} className="h-12 w-12 rounded-full" alt="log" /></div><span className="">{category_name}</span></div>
+          </Tab>
+        ))}
+      </TabsHeader>
         <TabsBody>
           <TabPanel key={1} value={1}>
-            <div className={`bg-white -mx-5 -my-5 px-2 pt-3 ${bannerscroll?'overflow-scroll':''}`} onScroll={handleScroll2}  style={{ height: `calc(100vh - 110px)` }}>
+            <div className={`bg-white -mx-5 -my-5 px-2 pt-3`} onScroll={handleScroll2}>
             { isloading?
               <div className='flex self-center p-10 justify-center'>
               <Spinner  size="lg" classNames={{circle1: "border-b-[#27374D]" }}/>
               </div>
               :
-              <div className="grid grid-cols-2 gap-2 place-items-center overflow-hidden">
+              <div className="grid grid-cols-2 gap-2 place-items-center">
            
               {filterValue &&
                 filterValue.sort((a, b) => (a.dealRank > b.dealRank) ? 1 : -1).map((offer) =>
                 <>
-                  {(offer?.offer_category) &&
+                  {(offer?.id !== '78' || decoded?.bankName === 'BOB') &&
                   <Link onClick={()=>{onLinkClick(offer.id)}} to={'/product/'+offer.id}>
                   <div className="relative flex justify-center mt-10">
                     <div className={`h-56 w-11/12 rounded-lg border border-gray-300 flex justify-center`} style={{ backgroundColor: `${offer?.down_color}`}}>
@@ -374,40 +394,43 @@ function Home() {
             </div>
           </TabPanel>
             
-          {allCategories.map(({ id, desc }) => (
-          <TabPanel key={id} value={id}>
-            <div className={`bg-white -mx-5 -my-5 px-2 pt-3 ${bannerscroll?'overflow-scroll':''}`} onScroll={handleScroll2} style={{ height: `calc(100vh - 110px)` }}>
+          {activeTab !== 1 && filterCat.map(({ id, desc }) => (
+          <TabPanel key={id} value={id} style={{ height: `calc(${items.length*250}px)`}}>
+            <div className={`bg-white -mx-5 -my-5 px-2 pt-3 }`} onScroll={handleScroll2} style={{ height: `calc(100vh - 110px)` }}>
               <div className="grid grid-cols-2 gap-2 place-items-center overflow-hidden">
               {filterValue &&
               filterValue.sort((a, b) => (a.dealRank > b.dealRank) ? 1 : -1).map((offer) =>
                 <>
-                {(offer?.offer_category === id) &&
-                <Link onClick={()=>{onLinkClick(offer.id)}} to={'/product/'+offer.id}>
-                <div className="relative flex justify-center">
-                  <div className={`h-60 w-11/12 rounded-lg border border-gray-300 flex justify-center`} style={{ backgroundColor: `${offer?.down_color}`}}>
-                    <div className="absolute -top-1/2 z-10 rounded-full"><img src={offer?.brand_logo} className="p-1 w-16 h-16" alt="logo" /></div>
-                    <div className="absolute top-14 h-12 w-10/12 flex justify-center">
-                      <span className={`font-bold leading-none line-clamp-2 z-10 flex self-center text-center pb-1 ${(offer?.product_name.length > 13)?'text-base ':'text-lg'} ${(lumaCalculate(offer?.up_color) < 200)?'text-white':'text-black'}`}>
-                      {offer?.product_name}
-                      </span>
-                    </div>
-                    <div className={`absolute z-10 ${(offer?.product_name.length < 16)?'top-24':'top-24'}`}>
-                      <div className=" flex justify-center w-fit h-7 rounded-lg px-2 bg-[#27374D]">
-                        {(offer?.offer_type === '2')?
-                        <span className="text-white font-semibold text-sm pt-1">{offer?.uptoflat === "1"?'UP TO':'FLAT'} { Math.round(offer?.offer_percentage)}% OFF</span>
-                        :
-                        <span className="text-white font-semibold text-sm pt-1">{offer?.uptoflat === "1"?'UP TO':'FLAT'} {Math.round(offer?.offer_percentage)} OFF</span>
-                        }
-                      </div>
-                    </div>
-                    <div className={`relative w-44 h-48 rounded-bl-[80px] rounded-br-[80px] rounded-tl-[8px] rounded-tr-[8px]`} style={{ backgroundColor: `${offer?.up_color}`}}>
-                      <div className="absolute -bottom-11 right-0">
-                        <img src={offer?.product_pic} className="w-28 h-28" alt="product_img" /> 
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                </Link>
+                {(offer?.offer_category === id && (offer?.id !== '78' || decoded?.bankName === 'BOB')) &&
+                 <Link onClick={()=>{onLinkClick(offer.id)}} to={'/product/'+offer.id}>
+                 <div className="relative flex justify-center mt-10">
+                   <div className={`h-56 w-11/12 rounded-lg border border-gray-300 flex justify-center`} style={{ backgroundColor: `${offer?.down_color}`}}>
+                     <div className='absolute -translate-y-1/2 z-10 w-16 h-16 p-1 bg-white border border-gray-500  drop-shadow-lg rounded-md flex items-center'>
+                       <div className="z-10 rounded-full"><img src={offer?.brand_logo} className="p-1 w-16 h-auto" alt="logo" /></div>
+                     </div>
+                     <div className="absolute top-10 h-12 w-10/12 flex justify-center">
+                       <span className={`font-bold leading-none line-clamp-2 z-10 flex self-center text-center pb-1 ${(offer?.product_name.length > 13)?'text-base ':'text-lg'} ${(lumaCalculate(offer?.up_color) < 200)?'text-white':'text-black'}`}>
+                       {offer?.product_name}
+                       </span>
+                     </div>
+                     <div className={`absolute z-10 ${(offer?.product_name.length < 16)?'top-24':'top-24'}`}>
+                       <div className=" flex justify-center w-fit h-7  px-2 bg-[#ffffff]">
+                         {(offer?.offer_type === '2')?
+                         <span className="text-black font-semibold text-sm pt-1">{offer?.uptoflat === "1"?'UP TO':'FLAT'} { Math.round(offer?.offer_percentage)}% OFF</span>
+                         :
+                         <span className="text-black font-semibold text-sm pt-1">{offer?.uptoflat === "1"?'UP TO':'FLAT'} {Math.round(offer?.offer_percentage)} OFF</span>
+                         }
+                       </div>
+                     </div>
+
+                     <div className={`relative w-44 h-[11.5rem] rounded-bl-[80px] rounded-br-[80px] rounded-tl-[8px] rounded-tr-[8px]`} style={{ backgroundColor: `${offer?.up_color}`}}>
+                       <div className="absolute -bottom-8 left-1/2 -translate-x-1/2">
+                         <img src={offer?.product_pic} className="w-24 h-auto max-h-28" alt="product_img" /> 
+                       </div>
+                     </div>
+                   </div>
+                 </div>
+                 </Link>
                 }
                 </>
               )}
@@ -417,9 +440,8 @@ function Home() {
           </TabPanel>
         ))}
         </TabsBody>
-      </Tabs>
       </div>
-      </div>
+    </div>
 
       <Dialog
         size="xs"
@@ -448,7 +470,7 @@ function Home() {
           </CardFooter>
         </Card>
       </Dialog>
-    </div>
+    </Tabs>
   )
 }
 

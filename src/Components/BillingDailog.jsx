@@ -28,9 +28,16 @@ const BillingDetailsDialog = ({ open, onClose, data, handlePay, setIsLoading }) 
           <span>Offer Discount</span>
           <span className="font-medium">₹ {data?.original_price - data?.discounted_price}</span>
         </div>
+        {data?.rewardApplied > 0 && (
+          <div className="flex justify-between border-b p-2 text-gray-500">
+            <span>Point Discount</span>
+            <span className="font-medium text-[#24CB7E]">₹ {data.rewardApplied}</span>
+          </div>
+        )}
+        {console.log(data?.rewardApplied)}
         <div className="flex justify-between text-gray-500 p-2">
           <span>Total Payable</span>
-          <span className="text-black">₹ {data?.discounted_price}</span>
+          <span className="text-black">₹ {data?.discounted_price - data?.rewardApplied}</span>
         </div>
       </DialogBody>
 
