@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react'
 import Backwhite from '../../Assets/back_white1.svg'
 import backdark from '../../Assets/back_dark1.svg'
 import { Button, Spinner, Dialog, Card, CardBody, CardFooter, Typography, Switch } from '@material-tailwind/react'
-import { useNavigate, Link} from 'react-router-dom'
+import { useNavigate,useLocation, Link} from 'react-router-dom'
 import { makeApiCall, makeApiCallWithAuth, makeApiGetCallWithAuth } from '../../Services/Api' 
 import "./style.css"
 import rightSign from '../../Assets/rightSign.svg'
@@ -36,18 +36,12 @@ function Product() {
   const [openSelect, setOpenSelect] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState({});
   const [paymentStatus, setPaymentStatus] = useState('');
-  const [orderDetails, setOrderDetails] = useState({
-    expairy:'Expires on February 22, 2025',
-    code:'TF601XVHVJ',
-    pts:'1',
-    order_id:'22336070437',
-    date:'1 Nov, 12:05 PM',
-    deliveryDate:'Jan 01, 2025',
-  })
+  const [orderDetails, setOrderDetails] = useState({})
   const [productDeliverable, setProductDeliverable] = useState(true);
   const [rewardApplied,setRewardApplied] = useState(false)
   const [rewardAmountApplaied,setRewardAmountApplaied] = useState(0)
   const navigate = useNavigate();
+  const location = useLocation()
   const offerId = sessionStorage.getItem('id');
   const queryParams = new URLSearchParams(window.location.search);
   const hdnRefNumber = queryParams.get('hdnRefNumber');
@@ -60,6 +54,8 @@ function Product() {
   const bankName = queryParams.get('bankName');
   
   useEffect(() => {
+    console.log(location.state)
+  
   if(hdnRefNumber && !modal && !isloading){
     setIsloading(true);
     let data ={
@@ -73,10 +69,19 @@ function Product() {
       console.log("getpayres",response.data)
       if(response?.data?.status === 200){
         sessionStorage.setItem('coupon',JSON.stringify(response.data.data))
-        setOrderDetails(response.data.data)
-        setPaymentStatus('sucess')
-        setModal('success')
+        // setOrderDetails(response.data.data)
+        // setPaymentStatus('success')
+        // setModal('success')
         setIsloading(false);
+        navigate('/handlePayment',{state:{status:'success',message:response?.data?.message,id:offerId}})
+      }
+      else if(response?.data?.status === 402){
+        setIsloading(false);
+        navigate('/handlePayment',{state:{status:'pending',message:response?.data?.message,id:offerId}})
+      }
+      else if(response?.data?.status === 500){
+        setIsloading(false);
+        navigate('/handlePayment',{state:{status:'failure',message:response?.data?.message,id:offerId}})
       }
       else{
         if(!modal){
@@ -87,6 +92,14 @@ function Product() {
       }
     })
     .catch((e) => {console.log("err", e); setIsloading(false);})
+    }
+    else if(location.state?.status === 'success'){
+      const data = JSON.parse(sessionStorage.getItem('coupon'))[0]?.details || JSON.parse(sessionStorage.getItem('coupon'))
+      setOrderDetails(data)
+      setPaymentStatus('success')
+      const {amount,created_at,id,order_id,pay_mode,...fulladdress} = data
+      console.log(fulladdress)
+      setSelectedAddress(fulladdress)
     }
   },[]);
 
@@ -191,8 +204,8 @@ function Product() {
     .catch((e) => console.log("err", e))
 
   },[]);
-
-  const handlePay = (picked) => {
+  const handlePay = () => {
+    const picked = (rewardApplied ? 2 : 1)
     setIsloading(true);
     makeApiCallWithAuth('trackEvent', {event: 3, offer: sessionStorage.getItem('id'), mop: picked})
     .then((response) => {
@@ -219,7 +232,7 @@ function Product() {
       else if(response?.data?.status === 200){
         sessionStorage.setItem('coupon',JSON.stringify(response.data.data))
         setIsloading(false);
-        navigate('/redeem')
+        // navigate('/redeem')
       }
       else{
         setIsloading(false);
@@ -239,7 +252,7 @@ function Product() {
   }
 
   const handleClickPay = () => {
-    if (selectedAddress.address || !productDeliverable) {
+    if (selectedAddress?.address || !productDeliverable) {
       setBillingDailog(true);
     } else {
         setAddressError(true)
@@ -268,7 +281,7 @@ function Product() {
 
   const CustomCard = ({icon,iconBg, text, children}) => {
     return(
-      <div className={`mt-3 flex justify-between items-center p-3 my-2 border border-gray-300 rounded-2xl shadow-sm bg-white ${ text=== 'Use ₹100 Rewards' && rewardApplied ? 'bg-gradient-to-l from-[#C8EEC9] from-[3rem] via-[#EFFAEF] via-[6rem] to-transparent border-2 border-[#00B10266]' : ''}`}>
+      <div className={`mt-3 flex justify-between items-center p-3 my-2 border border-gray-300 rounded-2xl shadow-sm bg-white ${ iconBg==='#FCF8De' && rewardApplied ? 'bg-gradient-to-l from-[#C8EEC9] from-[3rem] via-[#EFFAEF] via-[6rem] to-transparent border-2 border-[#00B10266]' : ''}`}>
       {icon && 
       <div className={`p-3 rounded-full`} style={{ backgroundColor: iconBg }}>
       <img src={icon} alt="icon" className="w-8 h-8" />
@@ -320,7 +333,7 @@ function Product() {
       </div>
       </>
       }
-      {paymentStatus !== 'sucess' &&
+      {paymentStatus !== 'success' &&
       <>
       <h1 className={`text-center w-full font-sans text-2xl font-semibold text-customGray pt-3`} >{offerdeets?.product_name}</h1>
       
@@ -347,17 +360,21 @@ function Product() {
       </div>
       </>
       }
-      {paymentStatus === 'sucess' &&
+      {paymentStatus === 'success' &&
       <>
         <div className='flex flex-col gap-2'>
         <h1 className={`text-center w-full font-sans text-2xl font-semibold text-customGray pt-3`} >{offerdeets?.product_name}</h1>
         { !productDeliverable && 
         <>
           <p className='text-center text-base font-medium text-customGray font-sans '>
-            {orderDetails?.expairy}
+          {new Date(orderDetails?.offer_validity).toLocaleDateString("en-US", {
+            month: "short",
+            day: "2-digit",
+            year: "numeric",
+          })}
           </p>
           <div className='my-2 mx-3 border-2 border-dashed border-black rounded-full flex flex-row items-center justify-between p-1'>
-          <span className='px-3 font-medium text-xl text-customGray'>{orderDetails?.code}</span>
+          <span className='px-3 font-medium text-xl text-customGray'>{orderDetails?.coupon_code}</span>
           <Button variant='text' className='flex gap-2 items-center'>
             <span className='text-sm font-light'>Copy Code</span>
             <img src={copy}></img>
@@ -367,22 +384,34 @@ function Product() {
         
         }
        </div>
-        <div className={`relative flex flex-col border rounded-xl p-3 my-2 shadow-md mx-3 ${productDeliverable ? 'mb-12' : 'mb-5'} text-black`}>
+        <div className={`relative flex flex-col border rounded-xl p-3 my-2 shadow-md mx-3 ${productDeliverable ? 'mb-5' : 'mb-5'} text-black`}>
           <h1 className='font-semibold text-lg '>Order Details</h1>
-          <p className=''>{`Availed for ${orderDetails.pts} pts`}</p>
+          <p className=''>{`Availed for ₹  ${orderDetails.amount || 1} `}</p>
           <div className='flex font-normal justify-between'>
           <span>Order ID : {orderDetails?.order_id}</span>
-          <span>{orderDetails?.date}</span>
+          <span>
+            {(orderDetails?.purchase_time || orderDetails.created_at) &&
+              new Date(orderDetails.purchase_time || orderDetails.created_at).toLocaleDateString("en-US", {
+                day: "numeric",
+                month: "short",
+              }) + 
+              ", " + 
+              new Date(orderDetails.purchase_time  || orderDetails.created_at).toLocaleTimeString("en-US", {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: true,
+              })}
+          </span>
           </div>
-          {productDeliverable && 
+          {/* {productDeliverable && removed mb-12
           <div className='absolute bottom-0 translate-y-8 flex gap-1'><img src={deleveryTick} className='w-4'></img> Expected delivery date  {orderDetails?.deliveryDate}</div>
-          }
+          } */}
         </div>
       </>
       }
 
       <div className="px-3 bg-[#F9F9F9]" style={{ height: `calc(100vh - 450px)` }}>
-        {paymentStatus !== 'sucess' &&
+        {paymentStatus !== 'success' &&
         <>
         <CustomCard 
           icon={voucher} 
@@ -408,7 +437,7 @@ function Product() {
           <Button onClick={()=>setCouponDailog(true)} className='bg-white border-none shadow-none w-fit p-0'><img src={backdark} className='rotate-180 w-3'></img></Button>
           }
           </CustomCard>
-        <CustomCard icon={coin} iconBg='#FCF8DF' text={`${rewardAmountApplaied>0 ? `Use ₹ ${rewardAmountApplaied} Rewards` : 'Use Rewards'}`}>
+        <CustomCard icon={coin} iconBg='#FCF8De' text={`${rewardAmountApplaied>0 ? `Use ₹ ${rewardAmountApplaied} Rewards` : 'Use Rewards'}`}>
           <Switch
           disabled = {rewardAmountApplaied === 0}
           checked={rewardApplied}
@@ -431,7 +460,7 @@ function Product() {
           icon={packageIcon} 
           iconBg='#FCF7DF' 
           text={
-            <div className='flex flex-col'>
+            <div className='flex flex-col'>{console.log(selectedAddress)}
               <p className='flex-1 text-gray-800 font-medium text-lg'>Delivering to</p>
               {selectedAddress?.address ? (
                 <>
@@ -446,7 +475,7 @@ function Product() {
             </div>
           }
         >
-          <Button onClick={()=>{setOpenSelect(true)}} className='bg-white border-none shadow-none w-fit p-0'><img src={backdark} className='rotate-180 w-3'></img></Button>
+          <Button disabled={paymentStatus==='success'} onClick={()=>{setOpenSelect(true)}} className='bg-white border-none shadow-none w-fit p-0'><img src={backdark} className='rotate-180 w-3'></img></Button>
         </CustomCard>
         }
         {addresserror &&
@@ -479,7 +508,7 @@ function Product() {
         </div>
 
         <div className="py-20"></div>
-        {paymentStatus !== 'sucess' && 
+        {paymentStatus !== 'success' && 
         <>
           <div className="fixed bottom-0 left-0 w-full p-4 bg-white flex flex-row justify-between z-10 border border-t-4 h-fit rounded-t-2xl">
           <div className='flex flex-col'>
@@ -524,7 +553,7 @@ function Product() {
                         </div>
                 </CardBody>
                 <CardFooter className="pt-0">
-                    <Button variant="gradient" color="bg-lime-500" className="bg-lime-500 text-white" onClick={()=>{navigate('/redeem')}} fullWidth>
+                    <Button variant="gradient" color="bg-lime-500" className="bg-lime-500 text-white" onClick={handleCloseModal} fullWidth>
                         OK
                     </Button>
                 </CardFooter>

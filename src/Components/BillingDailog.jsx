@@ -34,7 +34,6 @@ const BillingDetailsDialog = ({ open, onClose, data, handlePay, setIsLoading }) 
             <span className="font-medium text-[#24CB7E]">₹ {data.rewardApplied}</span>
           </div>
         )}
-        {console.log(data?.rewardApplied)}
         <div className="flex justify-between text-gray-500 p-2">
           <span>Total Payable</span>
           <span className="text-black">₹ {data?.discounted_price - data?.rewardApplied}</span>

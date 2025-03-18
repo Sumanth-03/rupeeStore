@@ -63,3 +63,10 @@
   background-position: center center;
 }
 
+nav{
+  position: sticky;
+  top :64px;
+  z-index: 50;
+  background-color: white;
+}
+

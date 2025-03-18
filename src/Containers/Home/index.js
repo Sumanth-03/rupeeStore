@@ -202,11 +202,16 @@ function Home() {
   },[filterValue, allCategories]);
 
   let decoded = '';
-  if(token){
-      decoded = jwtDecode(token);
-  }
-  else{
-    decoded = jwtDecode(sessionStorage.getItem('token'));
+  const Token = token || sessionStorage.getItem("token");
+
+  try {
+    if (Token && typeof Token === "string" && Token.trim() !== "") {
+      decoded = jwtDecode(Token);
+    } else {
+      decoded = null;
+    }
+  } catch (error) {
+    decoded = null; 
   }
 
   const handleChange = (data) => {

@@ -8,6 +8,7 @@ import Profile from './Containers/Profile'
 import Couponinfo from './Containers/CouponInfo'
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import PaymentErrorHandler from './Components/PaymentErrorHandler';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -20,6 +21,7 @@ root.render(
      <Route path="/redeem" element={<Redeem />}/>
      <Route path="/coupons" element={<Profile />}/>
      <Route path="/couponinfo" element={<Couponinfo />}/>
+     <Route path="/handlePayment" element={<PaymentErrorHandler />}/>
 
     </Routes>
     </BrowserRouter>
