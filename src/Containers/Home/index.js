@@ -12,6 +12,7 @@ import { makeApiCall, makeApiCallWithAuth, makeApiGetCallWithAuth } from '../../
 import {isMobile} from 'react-device-detect';
 import wrongSign from '../../Assets/wrongSign.svg'
 import "./style.css"
+import offerBg from '../../Assets/offferBg.svg'
 
 import {jwtDecode} from 'jwt-decode';
 
@@ -321,82 +322,82 @@ function Home() {
         }
       </div>
       <TabsHeader
-        className="rounded-none border-b border-blue-gray-50 bg-transparent p-0 overflow-x-auto"
+        className="flex rounded-none bg-transparent p-0 overflow-x-auto pt-2"
         indicatorProps={{
           className:
-            "bg-transparent border-b-2 border-[#27374D] shadow-none rounded-none",
+            "text-black bg-transparent border-2 border-black  rounded-2xl shadow-[4px_4px_10px_rgba(0,0,0,0.1),-4px_4px_10px_rgba(0,0,0,0.1)]",
         }}
-        
       >
         <Tab
             key={1}
             value={1}
             onClick={() => setActiveTab(1)}
-            className={activeTab === 1 ? "text-slate-700 text-xs font-normal" : "text-slate-300 opacity-80 text-xs font-normal"}
+            className={activeTab === 1 ? "text-slate-700 text-xs font-normal" : "mb-[10px] text-slate-300 opacity-80 text-xs font-normal"}
           >
-            <div className="w-16 h-16"><div className="flex justify-center"><img src={Allbrands} className="h-12 w-12 rounded-full" alt="log" /></div><span className="">All</span></div>
+            <div className={`${activeTab !== 1 ? 'shadow-[4px_4px_10px_rgba(0,0,0,0.1),-4px_4px_10px_rgba(0,0,0,0.1)]':''} p-2 px-4 rounded-xl w-[120px]`}>
+              <span className="text-black font-medium text-base">View all</span>
+            </div>
           </Tab>
         {filterCat.map(({ category_name, id, file_data }) => (
           <Tab
             key={id}
             value={id}
             onClick={() => setActiveTab(id)}
-            className={activeTab === id ? "text-slate-700 text-xs font-normal" : "text-slate-300 opacity-80 text-xs font-normal"}
+            className={activeTab === id ? "text-slate-700 text-xs font-normal " : "mb-[10px] text-slate-300 opacity-80 text-xs font-normal "}
           >
-            <div className="w-20 h-16"><div className="flex justify-center"><img src={file_data} className="h-12 w-12 rounded-full" alt="log" /></div><span className="">{category_name}</span></div>
+            <div className={`${activeTab !== id ? 'shadow-[4px_4px_10px_rgba(0,0,0,0.1),-4px_4px_10px_rgba(0,0,0,0.1)]': ''} p-2 px-4 rounded-xl w-[120px]`}>
+              <span className=" font-medium text-base">{category_name}</span>
+            </div>
           </Tab>
         ))}
       </TabsHeader>
         <TabsBody>
-          <TabPanel key={1} value={1}>
-            <div className={`bg-white -mx-5 -my-5 px-2 pt-3`} onScroll={handleScroll2}>
+        <TabPanel key={1} value={1}>
+          <div>
+          <div className={`bg-white -mx-5 -my-5 px-2 pt-3 -translate-y-2 z-50`} onScroll={handleScroll2} >
             { isloading?
-              <div className='flex self-center p-10 justify-center'>
-              <Spinner  size="lg" classNames={{circle1: "border-b-[#27374D]" }}/>
-              </div>
-              :
-              <div className="grid grid-cols-2 gap-2 place-items-center">
-           
-              {filterValue &&
-                filterValue.sort((a, b) => (a.dealRank > b.dealRank) ? 1 : -1).map((offer) =>
-                <>
-                  {(offer?.id !== '78' || decoded?.bankName === 'BOB') &&
-                  <Link onClick={()=>{onLinkClick(offer.id)}} to={'/product/'+offer.id}>
-                  <div className="relative flex justify-center mt-10">
-                    <div className={`h-56 w-11/12 rounded-lg border border-gray-300 flex justify-center`} style={{ backgroundColor: `${offer?.down_color}`}}>
-                      <div className='absolute -translate-y-1/2 z-10 w-16 h-16 p-1 bg-white border border-gray-500  drop-shadow-lg rounded-md flex items-center'>
-                        <div className="z-10 rounded-full"><img src={offer?.brand_logo} className="p-1 w-16 h-auto" alt="logo" /></div>
-                      </div>
-                      <div className="absolute top-10 h-12 w-10/12 flex justify-center">
-                        <span className={`font-bold leading-none line-clamp-2 z-10 flex self-center text-center pb-1 ${(offer?.product_name.length > 13)?'text-base ':'text-lg'} ${(lumaCalculate(offer?.up_color) < 200)?'text-white':'text-black'}`}>
-                        {offer?.product_name}
-                        </span>
-                      </div>
-                      <div className={`absolute z-10 ${(offer?.product_name.length < 16)?'top-24':'top-24'}`}>
-                        <div className=" flex justify-center w-fit h-7  px-2 bg-[#ffffff]">
-                          {(offer?.offer_type === '2')?
-                          <span className="text-black font-semibold text-sm pt-1">{offer?.uptoflat === "1"?'UP TO':'FLAT'} { Math.round(offer?.offer_percentage)}% OFF</span>
-                          :
-                          <span className="text-black font-semibold text-sm pt-1">{offer?.uptoflat === "1"?'UP TO':'FLAT'} {Math.round(offer?.offer_percentage)} OFF</span>
-                          }
-                        </div>
-                      </div>
-
-                      <div className={`relative w-44 h-[11.5rem] rounded-bl-[80px] rounded-br-[80px] rounded-tl-[8px] rounded-tr-[8px]`} style={{ backgroundColor: `${offer?.up_color}`}}>
-                        <div className="absolute -bottom-8 left-1/2 -translate-x-1/2">
-                          <img src={offer?.product_pic} className="w-24 h-auto max-h-28" alt="product_img" /> 
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  </Link>
-                  }
-                </>
-              )}
-              </div>
-            }
-              <div className="py-28"/>
+            <div className='flex self-center p-10 justify-center'>
+            <Spinner  size="lg" classNames={{circle1: "border-b-[#27374D]" }}/>
             </div>
+            :
+           <div className="grid grid-cols-2 gap-2 place-items-center">
+            {filterValue &&
+            filterValue.sort((a, b) => (a.dealRank > b.dealRank) ? 1 : -1).map((offer) =>
+            <>
+            {(offer?.offer_category) &&
+            <Link onClick={()=>{onLinkClick(offer.id)}} to={'/product/'+offer.id}>
+            <div className="relative flex justify-center">
+              <div className={`h-60 w-11/12 rounded-lg border border-gray-300 flex justify-center overflow-clip`} style={{ backgroundColor: `${offer?.down_color}`}}>
+              <div className="absolute top-0 z-10 rounded-full"><img src={offer?.brand_logo} className="p-1 w-16 h-16" alt="logo" /></div>
+              <div className="absolute top-14 h-12 w-10/12 flex justify-center"><span className={`font-bold leading-none line-clamp-2 z-10 flex self-center text-center pb-1 ${(offer?.product_name.length > 13)?'text-base ':'text-lg'} ${(lumaCalculate(offer?.up_color) < 200)?'text-white':'text-black'} text-white`}>{offer?.product_name}</span></div>
+              <div className={`absolute z-10 ${(offer?.product_name.length < 16)?'top-24':'top-24'}`}>
+              <div className="z-10 flex justify-center w-fit h-7 rounded-lg px-2 px-4 relative">
+              {(offer?.offer_type === '2')?
+              <span className="z-10 relative text-[#27374D] font-semibold text-sm p-1">{offer?.uptoflat === "1"?'UP TO':'FLAT'} { Math.round(offer?.offer_percentage)}% OFF</span>
+              :
+              <span className="z-10 relative text-[#27374D] font-semibold text-sm p-1">{offer?.uptoflat === "1"?'UP TO':'FLAT'} {Math.round(offer?.offer_percentage)} OFF</span>
+              }
+              <img className='z-0 absolute w-full h-full' src={offerBg}></img>
+              </div>
+              </div>
+              <div className={`relative w-44 h-48 `} >
+              <div className={`absolute w-60 h-48 rounded-bl-[120px] rounded-br-[120px] rounded-tl-[8px] rounded-tr-[8px] left-[50%] -translate-x-1/2`} style={{ backgroundColor: `${offer?.up_color}`}}>
+              </div>
+              <div className="absolute -bottom-11 right-0">
+                <img src={offer?.product_pic} className="w-28 h-28" alt="product_img" /> 
+              </div>
+              </div>
+              </div>
+            </div>
+            </Link>
+            }
+            </>
+            )}
+            </div>
+          }
+            <div className="py-28"/>
+            </div>
+          </div>
           </TabPanel>
             
           {activeTab !== 1 && filterCat.map(({ id, desc }) => (
@@ -408,31 +409,27 @@ function Home() {
                 <>
                 {(offer?.offer_category === id && (offer?.id !== '78' || decoded?.bankName === 'BOB')) &&
                  <Link onClick={()=>{onLinkClick(offer.id)}} to={'/product/'+offer.id}>
-                 <div className="relative flex justify-center mt-10">
-                   <div className={`h-56 w-11/12 rounded-lg border border-gray-300 flex justify-center`} style={{ backgroundColor: `${offer?.down_color}`}}>
-                     <div className='absolute -translate-y-1/2 z-10 w-16 h-16 p-1 bg-white border border-gray-500  drop-shadow-lg rounded-md flex items-center'>
-                       <div className="z-10 rounded-full"><img src={offer?.brand_logo} className="p-1 w-16 h-auto" alt="logo" /></div>
-                     </div>
-                     <div className="absolute top-10 h-12 w-10/12 flex justify-center">
-                       <span className={`font-bold leading-none line-clamp-2 z-10 flex self-center text-center pb-1 ${(offer?.product_name.length > 13)?'text-base ':'text-lg'} ${(lumaCalculate(offer?.up_color) < 200)?'text-white':'text-black'}`}>
-                       {offer?.product_name}
-                       </span>
-                     </div>
-                     <div className={`absolute z-10 ${(offer?.product_name.length < 16)?'top-24':'top-24'}`}>
-                       <div className=" flex justify-center w-fit h-7  px-2 bg-[#ffffff]">
-                         {(offer?.offer_type === '2')?
-                         <span className="text-black font-semibold text-sm pt-1">{offer?.uptoflat === "1"?'UP TO':'FLAT'} { Math.round(offer?.offer_percentage)}% OFF</span>
-                         :
-                         <span className="text-black font-semibold text-sm pt-1">{offer?.uptoflat === "1"?'UP TO':'FLAT'} {Math.round(offer?.offer_percentage)} OFF</span>
-                         }
-                       </div>
-                     </div>
-
-                     <div className={`relative w-44 h-[11.5rem] rounded-bl-[80px] rounded-br-[80px] rounded-tl-[8px] rounded-tr-[8px]`} style={{ backgroundColor: `${offer?.up_color}`}}>
-                       <div className="absolute -bottom-8 left-1/2 -translate-x-1/2">
-                         <img src={offer?.product_pic} className="w-24 h-auto max-h-28" alt="product_img" /> 
-                       </div>
-                     </div>
+                 <div className="relative flex justify-center">
+                   <div className={`h-60 w-11/12 rounded-lg border border-gray-300 flex justify-center overflow-clip`} style={{ backgroundColor: `${offer?.down_color}`}}>
+                   <div className="absolute top-0 z-10 rounded-full"><img src={offer?.brand_logo} className="p-1 w-16 h-16" alt="logo" /></div>
+                   <div className="absolute top-14 h-12 w-10/12 flex justify-center"><span className={`font-bold leading-none line-clamp-2 z-10 flex self-center text-center pb-1 ${(offer?.product_name.length > 13)?'text-base ':'text-lg'} ${(lumaCalculate(offer?.up_color) < 200)?'text-white':'text-black'} text-white`}>{offer?.product_name}</span></div>
+                   <div className={`absolute z-10 ${(offer?.product_name.length < 16)?'top-24':'top-24'}`}>
+                   <div className="z-10 flex justify-center w-fit h-7 rounded-lg px-2 px-4 relative">
+                   {(offer?.offer_type === '2')?
+                   <span className="z-10 relative text-[#27374D] font-semibold text-sm p-1">{offer?.uptoflat === "1"?'UP TO':'FLAT'} { Math.round(offer?.offer_percentage)}% OFF</span>
+                   :
+                   <span className="z-10 relative text-[#27374D] font-semibold text-sm p-1">{offer?.uptoflat === "1"?'UP TO':'FLAT'} {Math.round(offer?.offer_percentage)} OFF</span>
+                   }
+                   <img className='z-0 absolute w-full h-full' src={offerBg}></img>
+                   </div>
+                   </div>
+                   <div className={`relative w-44 h-48 `} >
+                   <div className={`absolute w-60 h-48 rounded-bl-[120px] rounded-br-[120px] rounded-tl-[8px] rounded-tr-[8px] left-[50%] -translate-x-1/2`} style={{ backgroundColor: `${offer?.up_color}`}}>
+                   </div>
+                   <div className="absolute -bottom-11 right-0">
+                     <img src={offer?.product_pic} className="w-28 h-28" alt="product_img" /> 
+                   </div>
+                   </div>
                    </div>
                  </div>
                  </Link>

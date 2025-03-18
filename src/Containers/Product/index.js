@@ -16,6 +16,7 @@ import AddressDialogs from '../../Components/AddressDailog'
 import BillingDetailsDialog from '../../Components/BillingDailog'
 import deleveryTick from '../../Assets/deleveryTick.svg'
 import copy from '../../Assets/copy.svg'
+import paymentNext from '../../Assets/paymentNext.svg'
 
 function Product() {
   const [coupon, setCoupon] = useState({})
@@ -47,6 +48,7 @@ function Product() {
   const hdnRefNumber = queryParams.get('hdnRefNumber');
   const transactionId = queryParams.get('transactionId');
   const amount = queryParams.get('amount');
+  const [showAll, setShowAll] = useState(false);
 
   const token = queryParams.get('token');
   const sessionId = queryParams.get('sessionid');
@@ -282,7 +284,10 @@ function Product() {
 
   const CustomCard = ({icon,iconBg, text, children}) => {
     return(
-      <div className={`mt-3 flex justify-between items-center p-3 my-2 border border-gray-300 rounded-2xl shadow-sm bg-white ${ iconBg==='#FCF8De' && rewardApplied ? 'bg-gradient-to-l from-[#C8EEC9] from-[3rem] via-[#EFFAEF] via-[6rem] to-transparent border-2 border-[#00B10266]' : ''}`}>
+      <div 
+        className={`mt-3 flex justify-between items-center p-3 my-2 border border-gray-300 rounded-2xl shadow-sm bg-white 
+         ${ iconBg==='#FCF8De' && rewardApplied ? 'bg-gradient-to-l from-[#C8EEC9] from-[0rem] via-[#EFFAEF] via-[5rem] to-transparent border-2 border-[#00B102]' : ''}`}
+      >
       {icon && 
       <div className={`p-3 rounded-full`} style={{ backgroundColor: iconBg }}>
       <img src={icon} alt="icon" className="w-8 h-8" />
@@ -342,13 +347,6 @@ function Product() {
       <span className={` font-bold z-10 text-black pr-2`}>
         <span className="line-through opacity-50">₹{ Number(offerdeets?.original_price).toFixed(0)}</span>
       </span>
-      <span className='text-black  text-center font-bold text-2xl px-2'>
-      {(offerdeets?.offer_type === '2')?
-        <span>₹{(offerdeets?.original_price-((offerdeets?.offer_percentage*offerdeets?.original_price)/100)).toFixed(0)}</span>
-        :
-        <span>₹{Number(offerdeets?.original_price-offerdeets?.offer_percentage).toFixed(0)}</span>
-        }
-      </span>
       <div className="flex justify-center w-fit px-2 bg-white">
         {(offerdeets?.offer_type === '2')?
           <span className="text-[#009A2B] font-semibold ">Get for {Math.round(offerdeets?.offer_percentage)}% OFF</span>
@@ -357,7 +355,13 @@ function Product() {
         }
       </div>
       <span className='text-black w-full text-center font-bold text-3xl mt-2'>₹{offerdeets?.amount}</span>
-       
+       {/* <span className='text-black w-full text-center font-bold text-2xl px-2'>
+      {(offerdeets?.offer_type === '2')?
+        <span>₹{(offerdeets?.original_price-((offerdeets?.offer_percentage*offerdeets?.original_price)/100)).toFixed(0)}</span>
+        :
+        <span>₹{Number(offerdeets?.original_price-offerdeets?.offer_percentage).toFixed(0)}</span>
+        }
+      </span> */}
       </div>
       </>
       }
@@ -377,10 +381,12 @@ function Product() {
           <div className='my-2 mx-3 border-2 border-dashed border-black rounded-full flex flex-row items-center justify-between p-1'>
           <span className='px-3 font-medium text-xl text-customGray'>{orderDetails?.coupon_code}</span>
           <Button variant='text' className='flex gap-2 items-center'>
-            <span className='text-sm font-light'>Copy Code</span>
+            
             <img src={copy}></img>
           </Button>
+          
           </div>
+          <div className='w-full -mt-2 mb-2 text-right'><span className='text-sm font-light mr-6'>Copy Code</span></div>
         </>
         
         }
@@ -407,6 +413,7 @@ function Product() {
           {/* {productDeliverable && removed mb-12
           <div className='absolute bottom-0 translate-y-8 flex gap-1'><img src={deleveryTick} className='w-4'></img> Expected delivery date  {orderDetails?.deliveryDate}</div>
           } */}
+          <div className='[background:linear-gradient(45deg,#17B46B,#24CB7E)] p-3 text-xs rounded-full absolute top-2 right-2 text-white py-1 px-4'>Success</div>
         </div>
       </>
       }
@@ -438,7 +445,20 @@ function Product() {
           <Button onClick={()=>setCouponDailog(true)} className='bg-white border-none shadow-none w-fit p-0'><img src={backdark} className='rotate-180 w-3'></img></Button>
           }
           </CustomCard>
-        <CustomCard icon={coin} iconBg='#FCF8De' text={`${rewardAmountApplaied>0 ? `Use ₹ ${rewardAmountApplaied} Rewards` : 'Use Rewards'}`}>
+        <CustomCard icon={coin} iconBg='#FCF8De' 
+        text={
+          <div className='flex flex-col'>{console.log(selectedAddress)}
+              <p className='flex-1 text-gray-800 font-medium text-lg'>Use Rewards</p>
+              {walpoints && (
+                <>
+                  <p className='text-sm'>
+                  Available balance { walpoints}
+                  </p>
+                </>
+              ) }
+          </div>
+        }
+        >
           <Switch
           disabled = {rewardAmountApplaied === 0}
           checked={rewardApplied}
@@ -486,11 +506,11 @@ function Product() {
         <div className="border-2 border-solid-blue-950 solid-opacity-10 rounded-xl shadow-md h-fit mt-3 p-2 pb-2 bg-[#FFFFFF]">
           <div className="text-[#021555] text-xl font-medium tracking-wide pl-2 py-3">Details</div>
           <div className="list-decimal text-[#021555] text-sm font-normal pl-2">
-            <ul className="pl-5 list-decimal ">
-            <li className="pb-1">Avail the deal by redeeming your points</li>
-            <li className="pb-1">You will get a coupon code.</li>
-            <li className="pb-1">Click on 'Redeem Now' and you will be redirected to the brand website</li>
-            <li className="pb-1">Add product to cart and apply the coupon code during checkout.</li>
+            <ul className="pl-5 list-decimal font-sans">
+            <li className="pb-3">Avail the deal by redeeming your points</li>
+            <li className="pb-3">You will get a coupon code.</li>
+            <li className="pb-3">Click on 'Redeem Now' and you will be redirected to the brand website</li>
+            <li className="pb-3">Add product to cart and apply the coupon code during checkout.</li>
             </ul>
           </div>
         </div>
@@ -499,11 +519,22 @@ function Product() {
           <div className="text-[#021555] text-xl font-medium tracking-wide pl-2 py-3">Terms and Conditions</div>
           <div className="text-[#021555] text-sm font-normal pl-2">
             {tnc &&
-            <ul className="pl-5 list-decimal ">
-              {tnc.map((tn) => 
-              <li className="pb-1">{tn}</li>
+            <div>
+              <ul className="pl-5 list-decimal text-[#021555] text-sm font-normal font-sans">
+                {tnc.slice(0, showAll ? tnc.length : 3).map((tn, index) => (
+                  <li key={index} className="pb-3">{tn}</li>
+                ))}
+              </ul>
+        
+              {tnc.length > 3 && (
+                <button 
+                  onClick={() => setShowAll(!showAll)} 
+                  className="text-[#019EEC] text-lg font-medium mt-2"
+                >
+                  {showAll ? "View Less" : "View More"}
+                </button>
               )}
-            </ul>
+            </div>
             }
           </div>
         </div>
@@ -513,7 +544,7 @@ function Product() {
         <>
           <div className="fixed bottom-0 left-0 w-full p-4 bg-white flex flex-row justify-between z-10 border border-t-4 h-fit rounded-t-2xl">
           <div className='flex flex-col justify-center '>
-            {/* <span className="font-bold line-through pr-2 opacity-40">₹{ Number(offerdeets?.original_price).toFixed(0)}</span> */}
+            <span className="font-bold line-through pr-2 opacity-40">₹{ Number(offerdeets?.original_price).toFixed(0)}</span>
             <div className="flex text-2xl font-bold w-fit text-customGray bg-white">
             {/* {(offerdeets?.offer_type === '2')?
               <span>₹ {(offerdeets?.original_price-((offerdeets?.offer_percentage*offerdeets?.original_price)/100)).toFixed(0)-(rewardApplied ? rewardAmountApplaied : 0)}</span>
@@ -524,7 +555,8 @@ function Product() {
               <span>₹ {offerdeets?.amount-(rewardApplied ? rewardAmountApplaied : 0)}</span>
               :
               <span>₹ {offerdeets?.amount-(rewardApplied ? rewardAmountApplaied : 0)}</span>
-            }
+            } 
+            <img src={paymentNext} className='pl-4'></img>
             </div>
           </div>
           <div className=''>

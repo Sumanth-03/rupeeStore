@@ -13,9 +13,10 @@ module.exports = withMT({
           },
           colors: {
             customGray: '#253851',
+            buttonBg: '#000000',
           },
           backgroundImage: {
-            buttonBg: 'linear-gradient(to bottom, #374D6B, #1C283B)',
+            // buttonBg: 'linear-gradient(to bottom, #374D6B, #1C283B)',
           },
     },
   },

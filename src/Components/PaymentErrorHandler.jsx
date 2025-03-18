@@ -22,16 +22,16 @@ function PaymentErrorHandler () {
     }
     const handleNavigate = (status, id) => {
         if(status==='success'){
-            navigate(`/product/${id}`, { state: { status } })
+            navigate(`/product/${id}`, { state: { status } , replace: true })
         }
         else if(status==='pending'){
-            navigate(`/product/${id}`)
+            navigate(`/product/${id}`, { replace: true })
         }
         else if(status==='failure'){
-            navigate(`/product/${id}`)
+            navigate(`/product/${id}`, { replace: true })
         }
         else {
-            navigate('/')
+            navigate('/', { replace: true })
         }
     }
     console.log(status,bgcolors[status]?.[0])
@@ -49,7 +49,7 @@ function PaymentErrorHandler () {
                 <Button onClick={()=>handleNavigate(status,id)} className="bg-buttonBg text-lg font-medium capitalize">
                     { status === 'success'? 'View Detail' : status === 'pending' ? 'Continue' : 'Try again'}
                 </Button>
-                <Button onClick={()=>navigate('/')}variant="text" className="border-2 border-[#253851] text-lg font-medium capitalize">
+                <Button onClick={()=>navigate('/', { replace: true })}variant="text" className="border-2 border-[#253851] text-lg font-medium capitalize">
                     {status === 'success'? 'Back home' : 'Cancel'}
                 </Button>
             </div>
