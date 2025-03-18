@@ -193,7 +193,7 @@ const AddressDialogs = ({ openAdd, setOpenAdd, openSelect, setOpenSelect, select
         <DialogBody>
           <div className="flex flex-col gap-4">
           {address.map((item, index) => (
-            <div key={index} className="border p-2 rounded-lg flex flex-row items-start">
+            <div key={item?.address} className="border p-2 rounded-lg flex flex-row items-start">
               {/* Radio Button */}
               <Radio
                 name="address"

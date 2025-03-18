@@ -263,14 +263,15 @@ function Product() {
   }
 
   useEffect (()=>{
-    let price
+    // let price
     
-    if(offerdeets?.offer_type === '2'){
-      price = (offerdeets?.original_price-((offerdeets?.offer_percentage*offerdeets?.original_price)/100)).toFixed(0)
+    // if(offerdeets?.offer_type === '2'){
+    //   price = (offerdeets?.original_price-((offerdeets?.offer_percentage*offerdeets?.original_price)/100)).toFixed(0)
 
-    }else{
-      price = Number(offerdeets?.original_price-offerdeets?.offer_percentage).toFixed(0)
-    }
+    // }else{
+    //   price = Number(offerdeets?.original_price-offerdeets?.offer_percentage).toFixed(0)
+    // }
+    let price = offerdeets?.amount
     if (price>=walpoints){
       setRewardAmountApplaied(walpoints)
     }else{
@@ -338,10 +339,16 @@ function Product() {
       <h1 className={`text-center w-full font-sans text-2xl font-semibold text-customGray pt-3`} >{offerdeets?.product_name}</h1>
       
       <div className='text-2xl flex flex-wrap items-center py-2 px-2 justify-center font-semibold'>
-      <span className={` font-bold z-10 text-black`}>
+      <span className={` font-bold z-10 text-black pr-2`}>
         <span className="line-through opacity-50">₹{ Number(offerdeets?.original_price).toFixed(0)}</span>
       </span>
-
+      <span className='text-black  text-center font-bold text-2xl px-2'>
+      {(offerdeets?.offer_type === '2')?
+        <span>₹{(offerdeets?.original_price-((offerdeets?.offer_percentage*offerdeets?.original_price)/100)).toFixed(0)}</span>
+        :
+        <span>₹{Number(offerdeets?.original_price-offerdeets?.offer_percentage).toFixed(0)}</span>
+        }
+      </span>
       <div className="flex justify-center w-fit px-2 bg-white">
         {(offerdeets?.offer_type === '2')?
           <span className="text-[#009A2B] font-semibold ">Get for {Math.round(offerdeets?.offer_percentage)}% OFF</span>
@@ -349,14 +356,8 @@ function Product() {
           <span className="text-[#009A2B] font-semibold ">Get for {Math.round(offerdeets?.offer_percentage)} OFF</span>
         }
       </div>
-      
-      <span className='text-black w-full pt-2 text-center font-bold text-3xl'>
-      {(offerdeets?.offer_type === '2')?
-        <span>₹{(offerdeets?.original_price-((offerdeets?.offer_percentage*offerdeets?.original_price)/100)).toFixed(0)}</span>
-        :
-        <span>₹{Number(offerdeets?.original_price-offerdeets?.offer_percentage).toFixed(0)}</span>
-        }
-      </span> 
+      <span className='text-black w-full text-center font-bold text-3xl mt-2'>₹{offerdeets?.amount}</span>
+       
       </div>
       </>
       }
@@ -511,13 +512,18 @@ function Product() {
         {paymentStatus !== 'success' && 
         <>
           <div className="fixed bottom-0 left-0 w-full p-4 bg-white flex flex-row justify-between z-10 border border-t-4 h-fit rounded-t-2xl">
-          <div className='flex flex-col'>
-            <span className="font-bold line-through pr-2 opacity-40">₹{ Number(offerdeets?.original_price).toFixed(0)}</span>
+          <div className='flex flex-col justify-center '>
+            {/* <span className="font-bold line-through pr-2 opacity-40">₹{ Number(offerdeets?.original_price).toFixed(0)}</span> */}
             <div className="flex text-2xl font-bold w-fit text-customGray bg-white">
-            {(offerdeets?.offer_type === '2')?
+            {/* {(offerdeets?.offer_type === '2')?
               <span>₹ {(offerdeets?.original_price-((offerdeets?.offer_percentage*offerdeets?.original_price)/100)).toFixed(0)-(rewardApplied ? rewardAmountApplaied : 0)}</span>
               :
               <span>₹ {Number(offerdeets?.original_price-offerdeets?.offer_percentage).toFixed(0)-(rewardApplied ? rewardAmountApplaied : 0)}</span>
+            } */}
+            {(offerdeets?.offer_type === '2')?
+              <span>₹ {offerdeets?.amount-(rewardApplied ? rewardAmountApplaied : 0)}</span>
+              :
+              <span>₹ {offerdeets?.amount-(rewardApplied ? rewardAmountApplaied : 0)}</span>
             }
             </div>
           </div>
@@ -599,14 +605,24 @@ function Product() {
     <BillingDetailsDialog 
     setIsLoading = {setIsloading}
     handlePay = {handlePay}
+    // data={{
+    //   rewardApplied : 
+    //   rewardApplied ? rewardAmountApplaied : 0,
+    //   original_price: offerdeets?.original_price,
+    //   discounted_price: 
+    //     offerdeets?.offer_type !== '2'
+    //       ? Number(offerdeets?.original_price - offerdeets?.offer_percentage).toFixed(0)
+    //       : Number(offerdeets?.original_price - ((offerdeets?.offer_percentage * offerdeets?.original_price) / 100)).toFixed(0)
+    // }} 
     data={{
       rewardApplied : 
       rewardApplied ? rewardAmountApplaied : 0,
-      original_price: offerdeets?.original_price,
-      discounted_price: 
-        offerdeets?.offer_type !== '2'
-          ? Number(offerdeets?.original_price - offerdeets?.offer_percentage).toFixed(0)
-          : Number(offerdeets?.original_price - ((offerdeets?.offer_percentage * offerdeets?.original_price) / 100)).toFixed(0)
+      original_price: offerdeets?.amount,
+      discounted_price: offerdeets?.amount-0
+        // offerdeets?.offer_type !== '2'
+        //   ? Number(offerdeets?.original_price - offerdeets?.offer_percentage).toFixed(0)
+        //   : Number(offerdeets?.original_price - ((offerdeets?.offer_percentage * offerdeets?.original_price) / 100)).toFixed(0)
+      
     }} 
       open={billingDailog} onClose={() => setBillingDailog(false)} 
     />
