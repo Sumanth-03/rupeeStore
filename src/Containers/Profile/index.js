@@ -14,7 +14,9 @@ import emptyoutlet from '../../Assets/emptyoutlet.svg'
 
 function Mycoupon() {
 
-  const [alloffers, setAlloffers] = useState([]);
+  const [alloffers, setAlloffers] = useState({});
+
+  const [activeType, setActiveType] = useState('coupons')
 
   const [isloading, setIsloading] = useState(false)
 
@@ -46,8 +48,18 @@ return(
         <div className="text-[#27374D] text-xl font-medium pl-3">My Deals</div>
         </div>
       </div>
-
       <div className="px-3 overflow-scroll" style={{ height: `calc(100vh - 50px)` }}>
+  {console.log(alloffers)}
+      { (!isloading && alloffers?.[activeType]?.length > 0 ) &&
+        <div className='w-full flex justify-evenly'>
+          <div onClick={()=>setActiveType('coupons')} className={`${activeType === 'coupons' ? 'text-black bg-transparent border-2 border-black  rounded-2xl ':''} p-2 px-4 rounded-xl w-[30%] shadow-[4px_4px_10px_rgba(0,0,0,0.1),-4px_4px_10px_rgba(0,0,0,0.1)] text-center`}>
+            coupons
+          </div>
+          <div onClick={()=>setActiveType('products')} className={`${activeType === 'products' ? 'text-black bg-transparent border-2 border-black  rounded-2xl ':''} p-2 px-4 rounded-xl w-[30%] shadow-[4px_4px_10px_rgba(0,0,0,0.1),-4px_4px_10px_rgba(0,0,0,0.1)]  text-center`}>
+          products
+        </div>
+      </div>
+      }
       { isloading?
             <div className='flex self-center p-10 justify-center'>
             <Spinner  size="lg" classNames={{circle1: "border-b-[#27374D]"  }}/>
@@ -55,8 +67,8 @@ return(
             :
             <>
       
-      {alloffers?.length > 0 ?
-            alloffers.slice(0).reverse().map((offer) =>
+      {alloffers?.[activeType]?.length > 0 ?
+            alloffers?.[activeType]?.slice(0).reverse().map((offer) =>
       <>
       <Link onClick={()=>{onLinkClick(offer)}} to='/couponinfo'>
       <div className="border-2 border-solid-blue-950 solid-opacity-10 rounded-md h-fit mt-3 mb-2 flex">
@@ -67,18 +79,56 @@ return(
       </div>
       <img src={Line} className="ml-2" alt="line" />
       <img src={scissor} className="mt-5 -ml-2 h-5 z-10 " alt="line" />
-
-      <div className="pl-3 pt-2">
-      {(offer?.offer_type === '2')?
-      <div className="text-[#021555] text-lg font-medium tracking-wide">{offer?.uptoflat === "1"?'UP TO':'FLAT'} {Math.round(offer.offer_percentage)}% Off</div>
-      :
-      <div className="text-[#021555] text-lg font-medium tracking-wide">{offer?.uptoflat === "1"?'UP TO':'FLAT'} {Math.round(offer.offer_percentage)} Off</div>
-      }
+      {(offer?.offer_type === '2' && activeType === 'coupons')?
+        <div className="pl-3 pt-2">
+        {offer?.offer_type === '2'?
+        <div className="text-[#021555] text-lg font-medium tracking-wide">{offer?.uptoflat === "1"?'UP TO':'FLAT'} {Math.round(offer.offer_percentage)}% Off</div>
+        :
+        <div className="text-[#021555] text-lg font-medium tracking-wide">{offer?.uptoflat === "1"?'UP TO':'FLAT'} {Math.round(offer.offer_percentage)} Off</div>
+        }
       <div className="opacity-60 text-[#021555] text-sm font-normal leading-snug tracking-wide">On min. purchase of ₹{offer.min_order} </div>
-      <div className="flex pt-2"><div className="text-[#021555] text-opacity-70 text-sm font-normal leading-snug tracking-wide">Code: <span className="text-[#021555] text-opacity-70 text-sm font-semibold leading-snug tracking-wide">{offer.redeem_code}</span></div><div>{(offer?.redeem_code !== 'pending') && <img src={clipboard} className="pl-1 -mt-1 h-5 z-30" alt="clipboard" onClick={() => {navigator.clipboard.writeText(offer.redeem_code)}}/>}</div></div>
+      {offer?.redeem_status !== 2 ? 
+        <div className="flex pt-2"><div className="text-[#021555] text-opacity-70 text-sm font-normal leading-snug tracking-wide">
+            Code: <span className="text-[#021555] text-opacity-70 text-sm font-semibold leading-snug tracking-wide">{offer.redeem_code}</span>
+            </div>
+            <div>
+              {(offer?.redeem_code !== 'pending') && <img src={clipboard} className="pl-1 -mt-1 h-5 z-30" alt="clipboard" onClick={() => {navigator.clipboard.writeText(offer.redeem_code)}}/>}
+            </div>
+        </div>
+        :
+        <span className={`opacity-60 text-[#021555] text-sm font-normal leading-snug tracking-wide `}>pending</span>
+      }
+      
       <div><span className="text-[#021555] text-opacity-70 text-sm font-normal leading-snug tracking-wide">Expiry: </span><span className="text-[#021555] text-opacity-70 text-sm font-semibold leading-snug tracking-wide">{new Date(offer.offer_validity).toUTCString().slice(4,16)}</span></div>
       <div className="flex pt-1"><div className="text-[#27374D] text-lg font-normal leading-snug tracking-wide">View Coupon</div><div><img src={move} className="mt-1.5 pl-1 h-3.5" alt="move" /></div></div>
       </div>
+
+      :
+
+      <div className="pl-3 pt-2">
+        {offer?.offer_type === '2'?
+        <div className="text-[#021555] text-lg font-medium tracking-wide">{offer?.uptoflat === "1"?'UP TO':'FLAT'} {Math.round(offer.offer_percentage)}% Off</div>
+        :
+        <div className="text-[#021555] text-lg font-medium tracking-wide">{offer?.uptoflat === "1"?'UP TO':'FLAT'} {Math.round(offer.offer_percentage)} Off</div>
+        }
+      <div className="opacity-60 text-[#021555] text-sm font-normal leading-snug tracking-wide">On min. purchase of ₹{offer.min_order} </div>
+      {(offer?.redeem_status !== 2 && activeType==='coupons')? 
+        <div className="flex pt-2"><div className="text-[#021555] text-opacity-70 text-sm font-normal leading-snug tracking-wide">
+            Code: <span className="text-[#021555] text-opacity-70 text-sm font-semibold leading-snug tracking-wide">{offer.redeem_code}</span>
+            </div>
+            <div>
+              {(offer?.redeem_code !== 'pending') && <img src={clipboard} className="pl-1 -mt-1 h-5 z-30" alt="clipboard" onClick={() => {navigator.clipboard.writeText(offer.redeem_code)}}/>}
+            </div>
+        </div>
+        :
+        <span className={`opacity-60 text-[#021555] text-sm font-normal leading-snug tracking-wide ${activeType === 'coupons' ? 'block' : 'hidden'}`}>pending</span>
+      }
+      
+      <div><span className="text-[#021555] text-opacity-70 text-sm font-normal leading-snug tracking-wide">Expiry: </span><span className="text-[#021555] text-opacity-70 text-sm font-semibold leading-snug tracking-wide">{new Date(offer.offer_validity).toUTCString().slice(4,16)}</span></div>
+      <div className="flex pt-1"><div className="text-[#27374D] text-lg font-normal leading-snug tracking-wide">{activeType === 'coupons' ? 'View Coupon' : 'View Details'}</div><div><img src={move} className="mt-1.5 pl-1 h-3.5" alt="move" /></div></div>
+      </div>
+      }
+      
       </div>
       </Link>
       </>

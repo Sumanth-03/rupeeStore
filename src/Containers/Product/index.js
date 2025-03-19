@@ -38,7 +38,7 @@ function Product() {
   const [selectedAddress, setSelectedAddress] = useState({});
   const [paymentStatus, setPaymentStatus] = useState('');
   const [orderDetails, setOrderDetails] = useState({})
-  const [productDeliverable, setProductDeliverable] = useState(true);
+  const [productDeliverable, setProductDeliverable] = useState(false);
   const [rewardApplied,setRewardApplied] = useState(false)
   const [rewardAmountApplaied,setRewardAmountApplaied] = useState(0)
   const navigate = useNavigate();
@@ -106,6 +106,7 @@ function Product() {
   },[]);
 
   useEffect(() => {
+    setIsloading(true)
     if(offerId){
       console.log("offid1",offerId)
     makeApiCallWithAuth('getOfferDetails',{offer_id: offerId})
@@ -122,6 +123,7 @@ function Product() {
           var b = (rgb >>  0) & 0xff;  // extract blue
           var luma = 0.2126 * r + 0.7152 * g + 0.0722 * b; // per ITU-R BT.709        
           if(luma < 200) {setLuma(true)}
+          setIsloading(false)
         }
     })
     .catch((e) => console.log("err", e))
@@ -177,7 +179,9 @@ function Product() {
       }
     }
     let offerkey = window.location.pathname.split("/").pop()
-    sessionStorage.setItem('id', offerkey)
+
+    if(offerkey !=='product'){
+    sessionStorage.setItem('id', offerkey)}
     makeApiCallWithAuth('getOfferDetails',{offer_id: offerkey})
     .then((response) => {
       console.log(response.data)
@@ -194,6 +198,8 @@ function Product() {
         }
     })
     .catch((e) => console.log("err", e))
+    
+
    }
    
    makeApiGetCallWithAuth('GetPWAWalletPoints')
@@ -223,6 +229,11 @@ function Product() {
         setIsloading(false);
         window.location.href = paymenturl;
         }
+      else if (response?.data?.data?.order_id){
+        sessionStorage.setItem('coupon',JSON.stringify(response.data.data))
+        setIsloading(false);
+        navigate('/handlePayment',{state:{status:'success',message:response?.data?.message,id:offerId}})
+          }
       else if(response?.data?.data?.errorstring === "Failed"){
         setIsloading(false);
         if(!modal){
@@ -449,7 +460,7 @@ function Product() {
         text={
           <div className='flex flex-col'>{console.log(selectedAddress)}
               <p className='flex-1 text-gray-800 font-medium text-lg'>Use Rewards</p>
-              {walpoints && (
+              {walpoints>=0 && (
                 <>
                   <p className='text-sm'>
                   Available balance { walpoints}
@@ -540,7 +551,7 @@ function Product() {
         </div>
 
         <div className="py-20"></div>
-        {paymentStatus !== 'success' && 
+        {paymentStatus !== 'success' ? 
         <>
           <div className="fixed bottom-0 left-0 w-full p-4 bg-white flex flex-row justify-between z-10 border border-t-4 h-fit rounded-t-2xl">
           <div className='flex flex-col justify-center '>
@@ -566,6 +577,12 @@ function Product() {
           </div>
           </div>
         </>
+        :
+        <div className='fixed bottom-0 left-0 w-full p-4 bg-white flex flex-row justify-between z-10 border border-t-4 h-fit rounded-t-2xl'>
+        <Button onClick={()=>{navigate(`${productDeliverable ? '/exitpwa':`/exitpwa?launch=${orderDetails?.offer_url}`}`)}} className="w-full bg-buttonBg text-lg font-medium capitalize">
+          {!productDeliverable ? 'Redeem Now' : 'Track Now'}
+        </Button>
+        </div>
         }
         
       </div>

@@ -45,16 +45,39 @@ return(
           }
         <div className="h-10 w-80 bg-white rounded-lg my-2 border-dashed border-2 flex justify-between" style={{ borderColor: `${coupondeets?.down_color}`}}>
           <div className="text-blue-950 text-base font-medium tracking-wide pl-2 pt-1.5">{coupondeets?.redeem_code}</div>
-          {!copyaction ?
-
-          (coupondeets?.redeem_code !== 'pending') && <div className="text-blue-950 text-sm font-medium tracking-wide pr-2 pt-2"> <button className="text-blue-950 text-sm font-medium tracking-wide pr-2" onClick={() => {navigator.clipboard.writeText(coupondeets?.redeem_code); setCopyaction(true)}}> COPY </button> </div>
-          :
-          <div className="text-blue-950 text-sm font-medium tracking-wide pr-2 pt-2"> <button className="text-blue-950 text-sm font-medium tracking-wide pr-2" onClick={() => {navigator.clipboard.writeText(coupondeets?.redeem_code)}}> COPIED! </button> </div>
-          }
+          {!copyaction ? (
+  <>
+    {(coupondeets?.redeem_code !== 'pending' && coupondeets?.redeem_status !== 2) && (
+      <div className="text-blue-950 text-sm font-medium tracking-wide pr-2 pt-2">
+        <button
+          className="text-blue-950 text-sm font-medium tracking-wide pr-2"
+          onClick={() => {
+            navigator.clipboard.writeText(coupondeets?.redeem_code);
+            setCopyaction(true);
+          }}
+        >
+          COPY
+        </button>
+      </div>
+    )}
+    {coupondeets?.redeem_status === 2 && <p className='w-full text-center text-blue-950 pt-1 font-medium'>Pending</p>}
+      </>
+    ) : (
+      <div className="text-blue-950 text-sm font-medium tracking-wide pr-2 pt-2">
+        <button
+          className="text-blue-950 text-sm font-medium tracking-wide pr-2"
+          onClick={() => navigator.clipboard.writeText(coupondeets?.redeem_code)}
+        >
+          COPIED!
+        </button>
+      </div>
+    )}
         </div>
-        <div className=""><span className="text-white text-sm font-medium lowercase tracking-wide">VAILD TILL</span><span className="text-white text-sm font-medium tracking-wide">: {new Date(coupondeets?.offer_validity).toUTCString().slice(4,16)}</span></div>
+        {coupondeets?.redeem_status !== 2 && <div className=""><span className="text-white text-sm font-medium lowercase tracking-wide">VAILD TILL</span><span className="text-white text-sm font-medium tracking-wide">: {new Date(coupondeets?.offer_validity).toUTCString().slice(4,16)}</span></div>}
       
-        {isMobile?
+        {coupondeets?.redeem_status !== 2 &&
+        
+        (isMobile?
           <Button className="bg-white w-60 my-3 h-12 shadow-2xl rounded-xl hover:bg-gray-200 border border-gray-800" onClick={()=>{
             makeApiCallWithAuth('trackEvent', {event: 4, offer: coupondeets?.id, mop: 2})
           .then((response) => {
@@ -72,7 +95,7 @@ return(
           .catch((e) => console.log("err", e));
           navigator.clipboard.writeText(coupondeets?.coupon_code);
           window.open(atob(coupondeets?.offer_url).split('?type=' || '&type=')[0].slice(7), '_blank')?.focus();}}><span className="text-[#021555] text-lg font-medium -my-2">REDEEM NOW</span></Button>
-        }
+        )}
       </div>
 
       {(offerid === '78') &&
@@ -83,9 +106,9 @@ return(
       <div className="border-2 border-solid-blue-950 solid-opacity-10 rounded-md h-fit mt-3 pb-1">
         <div className="text-[#021555] text-base font-medium tracking-wide py-1 pl-2">Order Details</div>
         {(coupondeets?.pay_mode === 1) ?
-        <div className="text-[#021555] text-sm font-normal leading-snug tracking-wide pl-2">Availed for 1 Rupee</div>
+        <div className="text-[#021555] text-sm font-normal leading-snug tracking-wide pl-2">Availed for {coupondeets?.amount} Rupee</div>
         :
-        <div className="text-[#021555] text-sm font-normal leading-snug tracking-wide pl-2">Availed for 1 Point</div>
+        <div className="text-[#021555] text-sm font-normal leading-snug tracking-wide pl-2">Availed for {coupondeets?.amount} Point</div>
         }
         <div className="flex justify-between">
           <div className="text-[#021555] text-opacity-90 text-sm font-normal leading-snug tracking-wide py-1 pl-2">Order ID : {coupondeets?.order_id}</div>
