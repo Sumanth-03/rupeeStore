@@ -37,6 +37,7 @@ function Product() {
   const [openAdd, setOpenAdd] = useState(false);
   const [openSelect, setOpenSelect] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState({});
+  const [paymentStatus, setPaymentStatus] = useState('');
   const [orderDetails, setOrderDetails] = useState({})
   const [productDeliverable, setProductDeliverable] = useState(false);
   const [rewardApplied,setRewardApplied] = useState(false)
@@ -47,7 +48,9 @@ function Product() {
   const queryParams = new URLSearchParams(window.location.search);
   const hdnRefNumber = queryParams.get('hdnRefNumber');
   const transactionId = queryParams.get('transactionId');
+  const amount = queryParams.get('amount');
   const [showAll, setShowAll] = useState(false);
+  const [campaignName, setCampaignName] = useState(true)
   const token = queryParams.get('token');
   const sessionId = queryParams.get('sessionid');
   const virtualId = queryParams.get('virtualid');
@@ -92,7 +95,7 @@ function Product() {
         setIsloading(false);
         navigate('/handlePayment',{state:{status:'pending',message:response?.data?.message,id:offerId}})
       }
-      else if(response?.data?.status === 403){
+      else if(response?.data?.status === 500){
         setIsloading(false);
         navigate('/handlePayment',{state:{status:'failure',message:response?.data?.message,id:offerId}})
       }
@@ -107,10 +110,18 @@ function Product() {
     .catch((e) => {console.log("err", e); setIsloading(false);});
     setIsloading(false);
     }
-
+    else if(location.state?.status === 'success'){
+      const data = JSON.parse(sessionStorage.getItem('coupon'))[0]?.details || JSON.parse(sessionStorage.getItem('coupon'))
+      setOrderDetails(data)
+      setPaymentStatus('success')
+      const {amount,created_at,id,order_id,pay_mode,...fulladdress} = data
+      setSelectedAddress(fulladdress)
+    }
   },[]);
 
   useEffect(() => {
+    console.log(paymentStatus)
+    if(paymentStatus !== 'success' && !hdnRefNumber){
       setIsloading(true)
       if(offerId){
         console.log("offid1",offerId)
@@ -216,7 +227,7 @@ function Product() {
           }
       })
       .catch((e) => console.log("err", e))
-  
+  }
   },[]);
 
   const handlePay = () => {
@@ -246,20 +257,20 @@ function Product() {
         if(!modal){
           setModal('failed')
           setErrmessage('Something Went Wrong')
-          setIsloading(false);
+          //setIsloading(false);
           }
       }
       else if(response?.data?.status === 200){
         sessionStorage.setItem('coupon',JSON.stringify(response.data.data))
         setIsloading(false);
-        navigate('/handlePayment',{state:{status:'success',message:response?.data?.message,id:offerId}})
+        // navigate('/redeem')
       }
       else{
         setIsloading(false);
         if(!modal){
           setModal('failed')
           setErrmessage(response.data?.message)
-          setIsloading(false);
+          //setIsloading(false);
           }
       }
     })
@@ -304,7 +315,7 @@ function Product() {
     return(
       <div 
         className={`mt-3 flex justify-between items-center p-3 my-2 border border-gray-300 rounded-2xl shadow-sm bg-white 
-         ${ iconBg==='#FCF8De' && rewardApplied ? 'bg-gradient-to-l from-[#C8EEC9] from-[0rem] via-[#EFFAEF] via-[5rem] to-transparent !border-1 !border-[#00B101]' : ''}`}
+         ${ iconBg==='#FCF8De' && rewardApplied ? 'bg-gradient-to-l from-[#C8EEC9] from-[0rem] via-[#EFFAEF] via-[5rem] to-transparent border-2 border-[#00B102]' : ''}`}
       >
       {icon && 
       <div className={`p-3 rounded-full`} style={{ backgroundColor: iconBg }}>
@@ -341,7 +352,7 @@ function Product() {
           <div className="w-fit bg-white rounded-full p-3 aspect-square flex items-center shadow-lg">
           <img src={offerdeets?.brand_logo} className="w-16" alt="" />
           </div>
-          <span className='font-sans font-[600] opacity-80 text-base text-customGray mt-2 h-5'>{offerdeets?.brand_name}</span>
+          <span className='font-sans font-medium text-base text-customGray mt-2 h-5'>{offerdeets?.brand_name}</span>
         </div>
         
         <div className={`absolute w-screen -mt-10 h-72`} style={{ backgroundColor: `${offerdeets?.down_color}`}}>
@@ -357,17 +368,19 @@ function Product() {
       </div>
       </>
       }
+      {paymentStatus !== 'success' &&
+      <>
       <h1 className={`text-center w-full font-sans text-2xl font-semibold text-customGray pt-3`} >{offerdeets?.product_name}</h1>
       
       <div className='text-2xl flex flex-wrap items-center py-2 px-2 justify-center font-semibold'>
       <span className={` font-bold z-10 text-black p1-2`}>
-        <span className="line-through opacity-30 text-2xl">₹{ Number(offerdeets?.original_price).toFixed(0)}</span>
+        <span className="line-through opacity-50">₹{ Number(offerdeets?.original_price).toFixed(0)}</span>
       </span>
-      <div className="flex justify-center w-fit px-2 bg-white text-xl">
+      <div className="flex justify-center w-fit px-2 bg-white">
         {(offerdeets?.offer_type === '2')?
-          <span className="text-[#009A2B] font-bold ">Get for {Math.round(offerdeets?.offer_percentage)}% OFF</span>
+          <span className="text-[#009A2B] font-semibold ">Get for {Math.round(offerdeets?.offer_percentage)}% OFF</span>
           :
-          <span className="text-[#009A2B] font-bold ">Get for {Math.round(offerdeets?.offer_percentage)} OFF</span>
+          <span className="text-[#009A2B] font-semibold ">Get for {Math.round(offerdeets?.offer_percentage)} OFF</span>
         }
       </div>
       <span className='text-black w-full text-center font-bold text-3xl mt-2'>₹{offerdeets?.amount}</span>
@@ -379,7 +392,71 @@ function Product() {
         }
       </span> */}
       </div>
+      </>
+      }
+      {paymentStatus === 'success' &&
+      <>
+        <div className='flex flex-col gap-2'>
+        <h1 className={`text-center w-full font-sans text-2xl font-semibold text-customGray pt-3`} >{offerdeets?.product_name}</h1>
+        { !productDeliverable && 
+        <>
+          <p className='text-center text-base font-medium text-customGray font-sans '>
+          {new Date(orderDetails?.offer_validity).toLocaleDateString("en-US", {
+            month: "short",
+            day: "2-digit",
+            year: "numeric",
+          })}
+          </p>
+          <div className='my-2 mx-3 border-2 border-dashed border-black rounded-full flex flex-row items-center justify-between p-1'>
+          <span className='px-3 font-medium text-xl text-customGray'>{orderDetails?.coupon_code}</span>
+          <Button onClick={()=>{navigator.clipboard.writeText(orderDetails?.coupon_code);makeApiCallWithAuth('trackEvent', {event: 4, offer: orderDetails?.id, mop: 12})}} variant='text' className='flex gap-2 items-center'>
+            
+            <img src={copy}></img>
+          </Button>
+          
+          </div>
+          <div className='w-full -mt-2 mb-2 text-right'><span className='text-sm font-light mr-6'>Copy Code</span></div>
+        </>
+        
+        }
+       </div>
+       {campaignName &&
+               <div className="h-[104px] py-2 rounded-3xl flex pb-2 justify-center bg-white mb-10">
+                   <Link to="/exitpwa?launch=PGNsaWNrPmh0dHBzOi8vY2xpY2suY2hlZ2dvdXQuY29tP3R5cGU9cmV3YXJkJmlkPTA8L2NsaWNrPg==">
+                       <img src={banner} className="rounded-3xl w-96" alt="Banner" />
+                   </Link>
+               </div>
+              }
+        <div className={`relative flex flex-col border rounded-xl p-3 my-2 shadow-md mx-3 ${productDeliverable ? 'mb-5' : 'mb-5'} text-black`}>
+          <h1 className='font-semibold text-lg '>Order Details</h1>
+          <p className=''>{`Availed for ₹  ${orderDetails.amount || 1} `}</p>
+          <div className='flex font-normal justify-between'>
+          <span>Order ID : {orderDetails?.order_id}</span>
+          <span>
+            {(orderDetails?.purchase_time || orderDetails.created_at) &&
+              new Date(orderDetails.purchase_time || orderDetails.created_at).toLocaleDateString("en-US", {
+                day: "numeric",
+                month: "short",
+              }) + 
+              ", " + 
+              new Date(orderDetails.purchase_time  || orderDetails.created_at).toLocaleTimeString("en-US", {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: true,
+              })}
+          </span>
+          </div>
+          {/* {productDeliverable && removed mb-12
+          <div className='absolute bottom-0 translate-y-8 flex gap-1'><img src={deleveryTick} className='w-4'></img> Expected delivery date  {orderDetails?.deliveryDate}</div>
+          } */}
+          <div className='[background:linear-gradient(45deg,#17B46B,#24CB7E)] p-3 text-xs rounded-full absolute top-2 right-2 text-white py-1 px-6'>Success</div>
+        </div>
+      </>
+      }
+
       <div className="px-3 bg-[#F9F9F9]" style={{ height: `calc(100vh - 450px)` }}>
+        {paymentStatus !== 'success' &&
+        <>
         <CustomCard 
           icon={voucher} 
           iconBg='#e6f5fd' 
@@ -403,7 +480,7 @@ function Product() {
           :
           <Button onClick={()=>setCouponDailog(true)} className='bg-white border-none shadow-none w-fit p-0'><img src={backdark} className='rotate-180 w-3'></img></Button>
           }
-        </CustomCard>
+          </CustomCard>
         <CustomCard icon={coin} iconBg='#FCF8De' 
         text={
           <div className='flex flex-col'>{console.log(selectedAddress)}
@@ -433,6 +510,8 @@ function Product() {
           // }}
         />
         </CustomCard>
+        </>
+        }
         {( productDeliverable ) &&
           <CustomCard 
           icon={packageIcon} 
@@ -453,7 +532,7 @@ function Product() {
             </div>
           }
         >
-          <Button  onClick={()=>{setOpenSelect(true)}} className='bg-white border-none shadow-none w-fit p-0'><img src={backdark} className='rotate-180 w-3'></img></Button>
+          <Button disabled={paymentStatus==='success'} onClick={()=>{setOpenSelect(true)}} className='bg-white border-none shadow-none w-fit p-0'><img src={backdark} className='rotate-180 w-3'></img></Button>
         </CustomCard>
         }
         {addresserror &&
@@ -461,7 +540,7 @@ function Product() {
         }
         
         <div className="border-2 border-solid-blue-950 solid-opacity-10 rounded-xl shadow-md h-fit mt-3 p-2 pb-2 bg-[#FFFFFF]">
-          <div className="text-[#000] text-xl font-medium tracking-wide pl-2 py-3">Details</div>
+          <div className="text-[#021555] text-xl font-medium tracking-wide pl-2 py-3">Details</div>
           <div className="list-decimal text-[#021555] text-sm font-normal pl-2">
             <ul className="pl-5 list-decimal font-sans">
             <li className="pb-3">Avail the deal by redeeming your points</li>
@@ -473,7 +552,7 @@ function Product() {
         </div>
 
         <div className="border-2 border-solid-blue-950 solid-opacity-10 rounded-xl shadow-md h-fit mt-3 p-2 pb-2 bg-[#FFFFFF]">
-          <div className="text-[#000] text-xl font-medium tracking-wide pl-2 py-3">Terms and Conditions</div>
+          <div className="text-[#021555] text-xl font-medium tracking-wide pl-2 py-3">Terms and Conditions</div>
           <div className="text-[#021555] text-sm font-normal pl-2">
             {tnc &&
             <div>
@@ -495,7 +574,38 @@ function Product() {
             }
           </div>
         </div>
+            <button onClick={()=>{sessionStorage.setItem('coupon',JSON.stringify({
+  "id": "432",
+  "brand_name": "Boat",
+  "site_id": 918,
+  "brand_description": "India's fastest growing audio & wearables brand. The most incredible range of wireless earphones, earbuds, headphones, smart watches, and home audio.",
+  "product_name": "Boat Membership",
+  "original_price": "175",
+  "offer_validity": "2025-04-30T09:20:00.000Z",
+  "offer_percentage": "5",
+  "min_order": 5,
+  "brand_logo": "https://onerupeestorefesg.blob.core.windows.net/deals/2003202535226-Fastrack.png",
+  "offer_category": 245,
+  "offer_type": "1",
+  "dealRank": 3,
+  "tnc": "Prior reservation is mandatory\r\nAll offers are inclusive of all applicable taxes and service charges\r\nIt is highly recommended that the customer wear masks while visiting the outlet to prevent infection.\r\nRight of admission reserved",
+  "up_color": "#4a90e2",
+  "down_color": "#50e3c2",
+  "uptoflat": "1",
+  "maxormin": "1",
+  "offer_url": "PGNsaWNrPmh0dHBzOi8vd3d3LmJvYXQtbGlmZXN0eWxlLmNvbS8/c3JzbHRpZD1BZm1CT29wSzNwcmN2UHhxSlBSbW85aXFPZDk3UXM3dVZWdHVkUnVzV3ZEVDZ2TzAtMGtaSlEwdSZ0eXBlPWh5cGVybGluazwvY2xpY2s+",
+  "amount": 5,
+  "offer_format": 1,
+  "campaign_name": "undefined",
+  "coupon_code": "GQDL2DPC",
+  "id_offer": "",
+  "order_id": "1742460474729279",
+  "purchase_time": "Thu Mar 20 2025 08:51:36 GMT+0000 (Coordinated Universal Time)",
+  "pay_mode": 1
+}));navigate('/redeem')}}>click</button>
         <div className="py-20"></div>
+        {paymentStatus !== 'success' ? 
+        <>
           <div className="fixed bottom-0 left-0 w-full p-4 bg-white flex flex-row justify-between z-10 border border-t-4 h-fit rounded-t-2xl">
           <div className='flex flex-col justify-center '>
             <span className="font-bold line-through pr-2 opacity-40">₹{ Number(offerdeets?.original_price).toFixed(0)}</span>
@@ -513,25 +623,29 @@ function Product() {
             <img src={paymentNext} className='pl-4'></img>
             </div>
           </div>
-          <div className="fixed bottom-0 left-0 w-full p-4 bg-white flex flex-row justify-between z-10 border border-t-4 h-fit rounded-t-2xl">
-          <div className='flex flex-col justify-center '>
-            <span className="font-bold line-through pr-2 opacity-40">₹{ Number(offerdeets?.original_price).toFixed(0)}</span>
-            <div className="flex text-2xl font-bold w-fit text-customGray bg-white">
-            {(offerdeets?.offer_type === '2')?
-              <span>₹ {offerdeets?.amount-(rewardApplied ? rewardAmountApplaied : 0)}</span>
-              :
-              <span>₹ {offerdeets?.amount-(rewardApplied ? rewardAmountApplaied : 0)}</span>
-            } 
-            <img src={paymentNext} className='pl-4'></img>
-            </div>
-          </div>
           <div className=''>
             <Button onClick={handleClickPay} className="w-full bg-buttonBg text-lg font-medium capitalize">
               Pay instantly
             </Button>
           </div>
           </div>
+        </>
+        :
+        (productDeliverable &&
+          <div className='fixed bottom-0 left-0 w-full p-4 bg-white flex flex-row justify-between z-10 border border-t-4 h-fit rounded-t-2xl'>
+          <Button onClick={()=>{makeApiCallWithAuth('trackEvent', {event: 4, offer: orderDetails?.id, mop: 11});
+          if (isMobile) {
+          navigate(`${`/exitpwa?launch=${orderDetails?.offer_url}`}`)
+          }else{
+          window.open(atob(orderDetails?.offer_url).split('?type=' || '&type=')[0].slice(7), '_blank')?.focus();
+          }
+          }} className="w-full bg-buttonBg text-lg font-medium capitalize">
+            Redeem Now
+          </Button>
           </div>
+        )
+        
+        }
         
       </div>
 

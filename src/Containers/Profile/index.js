@@ -49,8 +49,8 @@ return(
         </div>
       </div>
       <div className="px-3 overflow-scroll" style={{ height: `calc(100vh - 50px)` }}>
-  {console.log(alloffers)}
-      { (!isloading && alloffers?.[activeType]?.length > 0 ) &&
+
+      {/* { (!isloading && alloffers?.[activeType]?.length > 0 ) &&
         <div className='w-full flex justify-evenly'>
           <div onClick={()=>setActiveType('coupons')} className={`${activeType === 'coupons' ? 'text-black bg-transparent border-2 border-black  rounded-2xl ':''} p-2 px-4 rounded-xl w-[30%] shadow-[4px_4px_10px_rgba(0,0,0,0.1),-4px_4px_10px_rgba(0,0,0,0.1)] text-center`}>
             coupons
@@ -59,7 +59,8 @@ return(
           products
         </div>
       </div>
-      }
+      } */}
+      
       { isloading?
             <div className='flex self-center p-10 justify-center'>
             <Spinner  size="lg" classNames={{circle1: "border-b-[#27374D]"  }}/>
@@ -145,6 +146,7 @@ return(
       </>
       }
       </div>
+      
       </div>
 )}
 

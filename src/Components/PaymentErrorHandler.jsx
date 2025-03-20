@@ -22,7 +22,7 @@ function PaymentErrorHandler () {
     }
     const handleNavigate = (status, id) => {
         if(status==='success'){
-            navigate(`/product/${id}`, { state: { status } , replace: true })
+            navigate(`/redeem`, { state: { status } , replace: true })
         }
         else if(status==='pending'){
             navigate(`/product/${id}`, { replace: true })
@@ -44,7 +44,7 @@ function PaymentErrorHandler () {
                 </div>
             </div>
             <h3 className="text-2xl font-medium">{TransactionStatus[status]}</h3>
-            <p className="text-lg font-normal px-5 text-center">{message}</p>
+            {status !== 'success' && <p className="text-lg font-normal px-5 text-center">{message}</p>}
             <div className="flex justify-evenly w-full my-3 gap-2">
                 <Button onClick={()=>handleNavigate(status,id)} className="bg-buttonBg text-lg font-medium capitalize">
                     { status === 'success'? 'View Detail' : status === 'pending' ? 'Continue' : 'Try again'}

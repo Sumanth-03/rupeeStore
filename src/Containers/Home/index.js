@@ -189,7 +189,7 @@ function Home() {
         })
         .catch((e) => console.log("err", e))
     }
-  },[secondleg]);
+  },[]);
 
   
   useEffect(() => {
@@ -245,7 +245,7 @@ function Home() {
     
     var luma = 0.2126 * r + 0.7152 * g + 0.0722 * b; // per ITU-R BT.709        
     return luma
-    //if(luma < 200) {setLuma(true)}
+    if(luma < 200) {setLuma(true)}
   }
 
   const handleCloseModal=() => {
@@ -369,7 +369,7 @@ function Home() {
             <div className="relative flex justify-center">
               <div className={`h-60 w-11/12 rounded-lg border border-gray-300 flex justify-center overflow-clip`} style={{ backgroundColor: `${offer?.down_color}`}}>
               <div className="absolute top-0 z-10 rounded-full"><img src={offer?.brand_logo} className="p-1 w-16 h-16" alt="logo" /></div>
-              <div className="absolute top-14 h-12 w-10/12 flex justify-center"><span className={`font-bold leading-none line-clamp-2 z-10 flex self-center text-center pb-1 ${(offer?.product_name.length > 13)?'text-base ':'text-lg'} ${(lumaCalculate(offer?.up_color) < 200)?'text-white':'text-black'} text-white`}>{offer?.product_name}</span></div>
+              <div className="absolute top-14 h-12 w-10/12 flex justify-center"><span className={`font-bold leading-none line-clamp-2 z-10 flex self-center text-center pb-1 ${(offer?.product_name.length > 13)?'text-base ':'text-lg'} ${(lumaCalculate(offer?.up_color) < 200)?'text-white':'text-black'}`}>{offer?.product_name}</span></div>
               <div className={`absolute z-10 ${(offer?.product_name.length < 16)?'top-24':'top-24'}`}>
               <div className="z-10 flex justify-center w-fit h-7 rounded-lg px-2 px-4 relative">
               {(offer?.offer_type === '2')?
@@ -412,7 +412,7 @@ function Home() {
                  <div className="relative flex justify-center">
                    <div className={`h-60 w-11/12 rounded-lg border border-gray-300 flex justify-center overflow-clip`} style={{ backgroundColor: `${offer?.down_color}`}}>
                    <div className="absolute top-0 z-10 rounded-full"><img src={offer?.brand_logo} className="p-1 w-16 h-16" alt="logo" /></div>
-                   <div className="absolute top-14 h-12 w-10/12 flex justify-center"><span className={`font-bold leading-none line-clamp-2 z-10 flex self-center text-center pb-1 ${(offer?.product_name.length > 13)?'text-base ':'text-lg'} ${(lumaCalculate(offer?.up_color) < 200)?'text-white':'text-black'} text-white`}>{offer?.product_name}</span></div>
+                   <div className="absolute top-14 h-12 w-10/12 flex justify-center"><span className={`font-bold leading-none line-clamp-2 z-10 flex self-center text-center pb-1 ${(offer?.product_name.length > 13)?'text-base ':'text-lg'} ${(lumaCalculate(offer?.up_color) < 200)?'text-white':'text-black'}`}>{offer?.product_name}</span></div>
                    <div className={`absolute z-10 ${(offer?.product_name.length < 16)?'top-24':'top-24'}`}>
                    <div className="z-10 flex justify-center w-fit h-7 rounded-lg px-2 px-4 relative">
                    {(offer?.offer_type === '2')?
