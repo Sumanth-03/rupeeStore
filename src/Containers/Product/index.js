@@ -89,9 +89,9 @@ function Product() {
         // setOrderDetails(response.data.data)
         // setPaymentStatus('success')
         // setModal('success')
-        setIsloading(false);
         setPaymnetStatus('success')
         setPaymnetMessage(response?.data?.message)
+        setIsloading(false);
         // navigate('/handlePayment',{state:{status:'success',message:response?.data?.message,id:offerId}})
       }
       else if(response?.data?.status === 402){
@@ -375,7 +375,7 @@ function Product() {
           <div className="w-fit bg-tranferent rounded-full p- aspect-square flex items-center shadow-md">
           <img src={offerdeets?.brand_logo} className="w-16" alt="" />
           </div>
-          <span className='font-sans font-[600] opacity-80 text-base text-customGray mt-1 h-5'>{offerdeets?.brand_name}</span>
+          <span className='font-sans font-[600] opacity-80 text-base text-[#000] mt-1 h-5'>{offerdeets?.brand_name}</span>
         </div>
         
         <div className={`absolute w-screen -mt-10 h-72`} style={{ backgroundColor: `${offerdeets?.down_color}`}}>
@@ -391,7 +391,7 @@ function Product() {
       </div>
       </>
       }
-      <h1 className={`text-center w-full font-sans text-2xl font-semibold text-customGray pt-1`} >{offerdeets?.product_name}</h1>
+      <h1 className={`text-center w-full font-sans text-2xl font-semibold text-[#000] pt-1`} >{offerdeets?.product_name}</h1>
       
       <div className='text-2xl flex flex-wrap items-center py-1 px-2 justify-center font-semibold'>
       <span className={` font-bold z-10 text-black p1-2`}>
@@ -496,7 +496,7 @@ function Product() {
         
         <div className="border-2 border-solid-blue-950 solid-opacity-10 rounded-xl shadow-md h-fit mt-3 p-2 pb-2 bg-[#FFFFFF]">
           <div className="text-[#000] text-xl font-medium tracking-wide pl-2 py-3">Details</div>
-          <div className="list-decimal text-[#021555] text-sm font-normal pl-2">
+          <div className="list-decimal text-[#000] text-sm font-normal pl-2">
             <ul className="pl-5 list-decimal font-sans">
             <li className="pb-3">Avail the deal by redeeming your points</li>
             <li className="pb-3">You will get a coupon code.</li>
@@ -508,10 +508,10 @@ function Product() {
 
         <div className="border-2 border-solid-blue-950 solid-opacity-10 rounded-xl shadow-md h-fit mt-3 p-2 pb-2 bg-[#FFFFFF]">
           <div className="text-[#000] text-xl font-medium tracking-wide pl-2 py-3">Terms and Conditions</div>
-          <div className="text-[#021555] text-sm font-normal pl-2">
+          <div className="text-[#000] text-sm font-normal pl-2">
             {tnc &&
             <div>
-              <ul className="pl-5 list-decimal text-[#021555] text-sm font-normal font-sans">
+              <ul className="pl-5 list-decimal text-[#000] text-sm font-normal font-sans">
                 {tnc.slice(0, showAll ? tnc.length : 3).map((tn, index) => (
                   <li key={index} className="pb-3">{tn}</li>
                 ))}
@@ -533,7 +533,7 @@ function Product() {
           <div className="fixed bottom-0 left-0 w-full p-2 bg-white flex flex-row justify-between z-10 border border-t-4 h-fit rounded-t-2xl">
           <div className='flex flex-col justify-center '>
             <span className="font-bold line-through pr-2 opacity-40">₹{ Number(offerdeets?.original_price).toFixed(0)}</span>
-            <div className="flex text-2xl font-bold w-fit text-customGray bg-white">
+            <div className="flex text-2xl font-bold w-fit text-[#000] bg-white">
             {/* {(offerdeets?.offer_type === '2')?
               <span>₹ {(offerdeets?.original_price-((offerdeets?.offer_percentage*offerdeets?.original_price)/100)).toFixed(0)-(rewardApplied ? rewardAmountApplaied : 0)}</span>
               :
@@ -550,7 +550,7 @@ function Product() {
           <div className="fixed bottom-0 left-0 w-full p-2 bg-white flex flex-row justify-between z-10 border border-t-4 h-fit rounded-t-2xl">
           <div className='flex flex-col justify-center '>
             <span className="font-bold line-through pr-2 opacity-40">₹{ Number(offerdeets?.original_price).toFixed(0)}</span>
-            <div className="flex text-2xl font-bold w-fit text-customGray bg-white">
+            <div className="flex text-2xl font-bold w-fit text-[#000] bg-white">
             {(offerdeets?.offer_type === '2')?
               <span>₹ {offerdeets?.amount-(rewardApplied ? rewardAmountApplaied : 0)}</span>
               :

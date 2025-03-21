@@ -55,6 +55,7 @@ function Product() {
   const sessionId = queryParams.get('sessionid');
   const virtualId = queryParams.get('virtualid');
   const bankName = queryParams.get('bankName');
+  const [copied, setCopied] = useState(false)
   
    const [width, setWidth] = useState(window.innerWidth);
     function handleWindowSizeChange() {
@@ -92,7 +93,7 @@ function Product() {
         if (isValidCampaignName(data?.campaign_name)) {
         setCampaignName(data.campaign_name);
         }
-        if (isValidCampaignName(data?.campaign_name)) {
+        if (isValidCampaignName(data?.campaign_name) && data?.orderDetails?.redeem_status !== 2) {
         sessionStorage.setItem('hasRunBefore', 'true');
          makeApiGetCallWithAuthCheggout(data?.campaign_name)
         }
@@ -105,6 +106,26 @@ function Product() {
   const handleCloseModal=() => {
     setModal('false')
   }
+
+  
+  
+
+  const fallbackCopy = (text) => {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand("copy");
+    document.body.removeChild(textArea);
+  };
+  const copyText = async(text) => {
+    setCopied(true)
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch (err) {
+        fallbackCopy(text);
+    }
+  } 
 
 
   const CustomCard = ({icon,iconBg, text, children}) => {
@@ -147,7 +168,7 @@ function Product() {
           <div className="w-fit bg-tranferent rounded-full p- aspect-square flex items-center shadow-md">
           <img src={orderDetails?.brand_logo} className="w-16" alt="" />
           </div>
-          <span className='font-sans font-[600] opacity-80 text-base text-customGray mt-1 h-5'>{orderDetails?.brand_name}</span>
+          <span className='font-sans font-[600] opacity-80 text-base text-[#000] mt-1 h-5'>{orderDetails?.brand_name}</span>
         </div>
         
         <div className={`absolute w-screen -mt-10 h-72`} style={{ backgroundColor: `${orderDetails?.down_color}`}}>
@@ -166,10 +187,10 @@ function Product() {
       
       <>
         <div className='flex flex-col gap-2'>
-        <h1 className={`text-center w-full font-sans text-2xl font-bold text-customGray pt-1`} >{orderDetails?.product_name}</h1>
+        <h1 className={`text-center w-full font-sans text-2xl font-bold text-[#000] pt-1`} >{orderDetails?.product_name}</h1>
         { !productDeliverable && 
         <>
-          <p className='text-center text-base font-semibold text-customGray font-sans '>
+          <p className='text-center text-base font-semibold text-[#000] font-sans '>
           {new Date(orderDetails?.offer_validity).toLocaleDateString("en-US", {
             month: "short",
             day: "2-digit",
@@ -178,17 +199,17 @@ function Product() {
           </p>
           <div className='my-2 mx-3 border-2 border-dashed border-black rounded-full flex flex-row items-center justify-between p-1'>
           {orderDetails?.redeem_status !== 2 ?
-          <span className='px-3 font-medium text-xl text-customGray'>{orderDetails?.coupon_code}</span>
+          <span className='px-3 font-medium text-xl text-[#000]'>{orderDetails?.coupon_code}</span>
           :
-          <span className='px-3 font-bold text-xl text-customGray tracking-widest pt-2 pl-4'>**********</span>
+          <span className='px-3 font-bold text-xl text-[#000] tracking-widest pt-2 pl-4'>**********</span>
           }
-          <Button onClick={()=>{navigator.clipboard.writeText(orderDetails?.coupon_code);makeApiCallWithAuth('trackEvent', {event: 4, offer: orderDetails?.id, mop: 12})}} variant='text' className='flex gap-2 items-center'>
+          <Button onClick={()=>{copyText(orderDetails?.coupon_code);makeApiCallWithAuth('trackEvent', {event: 4, offer: orderDetails?.id, mop: 12})}} variant='text' className='flex gap-2 items-center'>
             
             <img src={copy}></img>
           </Button>
           
           </div>
-          <div className='w-full -mt-[0.8rem] mb-0 text-right'><span className='text-xs font-light mr-8'>Copy Code</span></div>
+          <div className='w-full -mt-[0.8rem] mb-0 text-right'><span className='text-xs font-light mr-8'>{copied ? <span className='text-green-900'>Code Copied</span> :'Copy Code'}</span></div>
           {orderDetails?.redeem_status === 2 && <p className='px-6 text-sm -mt-3 mb-2 pt-1 text-[#D4082D]'>NOTE : Please check after 15-20 mins, if your payment went through your code will be generated.</p>}
         </>
         
@@ -202,9 +223,9 @@ function Product() {
                </div>
         }
         <div className={`relative flex flex-col border rounded-xl p-3 my-2 shadow-md mx-3 ${productDeliverable ? 'mb-3' : 'mb-3'} text-black`}>
-          <h1 className='font-bold text-lg '>Order Details</h1>
-          <p className='text-sm font-medium opacity-80'>{`Availed for ₹  ${orderDetails.amount || 1} `}</p>
-          <div className='flex font-medium justify-between opacity-80'>
+          <h1 className='text-[#000] font-medium text-xl tracking-wide'>Order Details</h1>
+          <p className='text-sm font-normal text-[#000]'>{`Availed for ₹  ${orderDetails.amount || 1} `}</p>
+          <div className='flex font-normal text-[#000] justify-between'>
           <span className='text-sm'>Order ID : {orderDetails?.order_id}</span>
           <span className='text-sm'>
             {(orderDetails?.purchase_time || orderDetails.created_at) &&
@@ -258,7 +279,7 @@ function Product() {
         
         <div className="border-2 border-solid-blue-950 solid-opacity-10 rounded-xl shadow-md h-fit mt-2 p-2 pb-2 bg-[#FFFFFF]">
           <div className="text-[#000] text-xl font-medium tracking-wide pl-2 py-3">Details</div>
-          <div className="list-decimal text-[#021555] text-sm font-normal pl-2">
+          <div className="list-decimal text-[#000] text-sm font-normal pl-2">
             <ul className="pl-4 list-decimal font-sans">
             <li className="pb-3">Avail the deal by redeeming your points</li>
             <li className="pb-3">You will get a coupon code.</li>
@@ -270,10 +291,10 @@ function Product() {
 
         <div className="border-2 border-solid-blue-950 solid-opacity-10 rounded-xl shadow-md h-fit mt-3 p-2 pb-2 bg-[#FFFFFF]">
           <div className="text-[#000] text-xl font-medium tracking-wide pl-2 py-3">Terms and Conditions</div>
-          <div className="text-[#021555] text-sm font-normal pl-2">
+          <div className="text-[#000] text-sm font-normal pl-2">
             {tnc &&
             <div>
-              <ul className="pl-4 list-decimal text-[#021555] text-sm font-normal font-sans">
+              <ul className="pl-4 list-decimal text-[#000] text-sm font-normal font-sans">
                 {tnc.slice(0, showAll ? tnc.length : 3).map((tn, index) => (
                   <li key={index} className="pb-3">{tn}</li>
                 ))}
