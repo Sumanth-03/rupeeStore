@@ -67,7 +67,7 @@ useEffect(() => {
     const {amount,created_at,id,order_id,pay_mode,...fulladdress} = data
     setSelectedAddress(fulladdress)
 
-    setTnc(data?.tnc.split("\r\n"))
+    setTnc(data?.tnc?.split("\r\n"))
     var c = data.up_color.substring(1);      // strip #
     var rgb = parseInt(c, 16);   // convert rrggbb to decimal
     var r = (rgb >> 16) & 0xff;  // extract red
@@ -107,7 +107,7 @@ useEffect(() => {
       }
       {orderDetails?.product_name &&
       <>
-      <div className="h-[15.5rem] top-0 relative mb-20">
+      <div className="h-[15.5rem] top-0 relative mb-[4.2rem]">
         {luma?
         <img src={Backwhite} className="absolute pt-3 ml-3 z-10" alt="back" onClick={()=>{navigate('/coupons')}}/>  
         :
@@ -115,10 +115,10 @@ useEffect(() => {
         }
 
         <div className='absolute -bottom-5 translate-y-1/2 right-1/2 translate-x-1/2 z-10  flex flex-col items-center'>
-          <div className="w-fit bg-white rounded-full p-3 aspect-square flex items-center shadow-lg">
+          <div className="w-fit bg-tranferent rounded-full p- aspect-square flex items-center shadow-md">
           <img src={orderDetails?.brand_logo} className="w-16" alt="" />
           </div>
-          <span className='font-sans font-[600] opacity-80 text-base text-customGray mt-2 h-5'>{orderDetails?.brand_name}</span>
+          <span className='font-sans font-[600] opacity-80 text-base text-customGray mt-1 h-5'>{orderDetails?.brand_name}</span>
         </div>
         
         <div className={`absolute w-screen -mt-10 h-72`} style={{ backgroundColor: `${orderDetails?.down_color}`}}>
@@ -135,7 +135,7 @@ useEffect(() => {
       
       <>
         <div className='flex flex-col gap-2'>
-        <h1 className={`text-center w-full font-sans text-2xl font-bold text-customGray pt-3`} >{orderDetails?.product_name}</h1>
+        <h1 className={`text-center w-full font-sans text-2xl font-bold text-customGray pt-1`} >{orderDetails?.product_name}</h1>
         { !productDeliverable && 
         <>
           <p className='text-center text-base font-semibold text-customGray font-sans '>
@@ -156,7 +156,7 @@ useEffect(() => {
           </Button>
           
           </div>
-          <div className='w-full -mt-2 mb-2 text-right'><span className='text-sm font-light mr-6'>Copy Code</span></div>
+          <div className='w-full -mt-[0.8rem] mb-0 text-right'><span className='text-xs font-light mr-6'>Copy Code</span></div>
           {orderDetails?.redeem_status === 2 && <p className='px-6 text-sm -mt-3 mb-2 pt-1 text-[#D4082D]'>NOTE : Please check after 15-20 mins, if your payment went through your code will be generated.</p>}
         </>
         }
@@ -171,7 +171,7 @@ useEffect(() => {
         </div>
        }
        
-        <div className={`relative flex flex-col border rounded-xl p-3 my-2 shadow-md mx-3 ${productDeliverable ? 'mb-5 mt-5' : 'mb-5'} text-black`}>
+        <div className={`relative flex flex-col border rounded-xl p-3 my-2 shadow-md mx-3 ${productDeliverable ? 'mb-3 mt-5' : 'mb-3'} text-black`}>
           <h1 className='font-bold opacity-70 text-lg '>Order Details</h1>
           <p className='text-sm font-medium  opacity-70'>{`Availed for ₹  ${orderDetails.amount || 1} `}</p>
           <div className='flex font-medium  opacity-80 justify-between'>
@@ -201,7 +201,7 @@ useEffect(() => {
           </div>
       </>
 
-      <div className={`px-3 bg-[#F9F9F9] ${!productDeliverable ? 'mt-5 pt-2' : ''}`} style={{ height: `calc(100vh - 450px)` }}>
+      <div className={`px-3 pt-1 rounded-t-2xl bg-[#F9F9F9] ${!productDeliverable ? 'mt-5 pt-2' : ''}`} style={{ height: `calc(100vh - 450px)` }}>
         {productDeliverable &&
             <CustomCard 
             icon={packageIcon} 
@@ -227,7 +227,7 @@ useEffect(() => {
         }
           
         
-        <div className={`border-2 border-solid-blue-950 solid-opacity-10 rounded-xl shadow-md h-fit mt-3 p-2 pb-2 bg-[#FFFFFF] `}>
+        <div className={`border-2 border-solid-blue-950 solid-opacity-10 rounded-xl shadow-md h-fit mt-2 p-2 pb-2 bg-[#FFFFFF] `}>
           <div className="text-[#000] text-xl font-medium tracking-wide pl-2 py-3">Details</div>
           <div className="list-decimal text-[#021555] text-sm font-normal pl-2">
             <ul className="pl-5 list-decimal font-sans">
@@ -265,7 +265,7 @@ useEffect(() => {
 
         <div className="py-20"></div>
         {!productDeliverable &&
-        <div className='fixed bottom-0 left-0 w-full p-4 bg-white flex flex-row justify-between z-10 border border-t-4 h-fit rounded-t-2xl'>
+        <div className='fixed bottom-0 left-0 w-full p-2 bg-white flex flex-row justify-between z-10 border border-t-4 h-fit rounded-t-2xl'>
         
         {isMobile ?
         <Button 

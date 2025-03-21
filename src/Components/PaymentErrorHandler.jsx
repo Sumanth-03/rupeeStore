@@ -1,14 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 import pending from '../Assets/pending.svg'
 import success from '../Assets/success.svg'
 import Failure from '../Assets/failure.svg'
 import { Button } from "@material-tailwind/react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-function PaymentErrorHandler () {
+function PaymentErrorHandler (props) {
     const location = useLocation()
     const navigate = useNavigate()
-    const {status, message,id} = location.state
+    const {status, message,id} = props
     console.log(status,message)
     const TransactionStatus = {
         success : 'Transaction Successful!',
@@ -25,7 +25,7 @@ function PaymentErrorHandler () {
             navigate(`/redeem`, { state: { status } , replace: true })
         }
         else if(status==='pending'){
-            navigate(`/product/${id}`, { replace: true })
+            navigate(`/redeem`, { replace: true })
         }
         else if(status==='failure'){
             navigate(`/product/${id}`, { replace: true })
@@ -34,10 +34,15 @@ function PaymentErrorHandler () {
             navigate('/', { replace: true })
         }
     }
+    useEffect(()=>{
+        setTimeout(()=>{
+            handleNavigate(status,id)
+        },2000)
+    })
     console.log(status,bgcolors[status]?.[0])
     return(
-        <main className="h-screen w-screen bg-white flex items-center justify-center">
-            <div className="shadow-[0px_0px_15px_#cccccc] flex flex-col items-center justify-center gap-6 mx-2 rounded-2xl p-3 py-5">
+        <main className="fixed inset-0 w-screen h-screen bg-black/30 backdrop-blur-md flex items-center justify-center z-50">
+            <div className="bg-white shadow-[0px_0px_15px_#cccccc] flex flex-col items-center justify-center gap-6 mx-2 rounded-2xl p-3 py-5">
             <div className={`p-4 rounded-full bg-[${bgcolors[status]?.[0]}]`} style={{backgroundColor:`${bgcolors[status]?.[0]}`}}>
                 <div className={`p-4 rounded-full bg-[${bgcolors[status]?.[1]}]`} style={{backgroundColor:`${bgcolors[status]?.[1]}`}}>
                     <img src={status === "success" ? success : status === "pending" ? pending : Failure}  className=""></img>

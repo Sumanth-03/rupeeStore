@@ -18,6 +18,7 @@ import deleveryTick from '../../Assets/deleveryTick.svg'
 import copy from '../../Assets/copy.svg'
 import paymentNext from '../../Assets/paymentNext.svg'
 import banner from '../../Assets/scratchbanner.png'
+import PaymentErrorHandler from '../../Components/PaymentErrorHandler'
 
 function Product() {
   const [coupon, setCoupon] = useState({})
@@ -30,6 +31,9 @@ function Product() {
   const [errmessage, setErrmessage] = useState('')
   const [sessionmsg, setSessionmsg] = useState('')
   const [offerkey, setOfferkey] = useState('')
+
+  const [paymentStatus, setPaymnetStatus] = useState('')
+  const [paymentMessage, setPaymnetMessage] = useState('')
 
   const [couponDailog, setCouponDailog] = useState(false)
   const [addresserror, setAddressError] = useState(false)
@@ -70,6 +74,7 @@ function Product() {
   
   if(hdnRefNumber && !modal && !isloading){
     setIsloading(true);
+    sessionStorage.setItem('order_id',hdnRefNumber)
     let data ={
       order_id: hdnRefNumber,
       razorpay_payment_id: transactionId,
@@ -85,16 +90,37 @@ function Product() {
         // setPaymentStatus('success')
         // setModal('success')
         setIsloading(false);
-        
-        navigate('/handlePayment',{state:{status:'success',message:response?.data?.message,id:offerId}})
+        setPaymnetStatus('success')
+        setPaymnetMessage(response?.data?.message)
+        // navigate('/handlePayment',{state:{status:'success',message:response?.data?.message,id:offerId}})
       }
       else if(response?.data?.status === 402){
+        let order_id = sessionStorage.getItem('order_id')
+        
+        let offerdeets = JSON.parse(sessionStorage.getItem('coupon') || '{}');
         setIsloading(false);
-        navigate('/handlePayment',{state:{status:'pending',message:response?.data?.message,id:offerId}})
+        setPaymnetStatus('pending')
+        setPaymnetMessage(response?.data?.message)
+        console.log(order_id,offerdeets)
+        sessionStorage.setItem('coupon',JSON.stringify(
+          {
+            ...offerdeets,
+            order_id: order_id,
+            redeem_status : 2,
+            created_at:response?.data?.data?.created_at
+          }
+        ))
+        
+        // navigate('/handlePayment',{state:{status:'pending',message:response?.data?.message,id:offerId}})
       }
       else if(response?.data?.status === 403){
         setIsloading(false);
-        navigate('/handlePayment',{state:{status:'failure',message:response?.data?.message,id:offerId}})
+        setPaymnetStatus('failure')
+        setPaymnetMessage(response?.data?.message)
+        setTimeout(()=>{
+          setPaymnetStatus('')
+        },2000)
+        // navigate('/handlePayment',{state:{status:'failure',message:response?.data?.message,id:offerId}})
       }
       else{
         if(!modal){
@@ -120,8 +146,9 @@ function Product() {
           if (response.data?.data) {
             setOfferDeets(response.data.data[0])
             setProductDeliverable(response.data.data[0]?.offer_format == 2)
-            setTnc(response.data.data[0]?.tnc.split("\r\n"))
-            sessionStorage.setItem('product_pic',response.data.data[0]?.product_pic)
+            setTnc(response.data.data[0]?.tnc?.split("\r\n"))
+            sessionStorage.setItem('product_pic', response.data.data[0]?.product_pic)
+            sessionStorage.setItem('coupon',JSON.stringify(response.data.data[0]))
             var c = response.data.data[0].up_color.substring(1);      // strip #
             var rgb = parseInt(c, 16);   // convert rrggbb to decimal
             var r = (rgb >> 16) & 0xff;  // extract red
@@ -188,12 +215,14 @@ function Product() {
 
       if(offerkey !=='product'){
       sessionStorage.setItem('id', offerkey)}
+
+      if(hdnRefNumber)return
       makeApiCallWithAuth('getOfferDetails',{offer_id: offerkey})
       .then((response) => {
         console.log(response.data)
           if (response.data?.data) {
             setOfferDeets(response.data.data[0])
-            setTnc(response.data.data[0]?.tnc.split("\r\n"))
+            setTnc(response.data.data[0]?.tnc?.split("\r\n"))
             var c = response.data.data[0].up_color.substring(1);      // strip #
             var rgb = parseInt(c, 16);   // convert rrggbb to decimal
             var r = (rgb >> 16) & 0xff;  // extract red
@@ -207,7 +236,7 @@ function Product() {
       
 
     }
-    
+    if(hdnRefNumber)return
     makeApiGetCallWithAuth('GetPWAWalletPoints')
       .then((response) => {
         //console.log(response.data.data.walletPoints)
@@ -235,11 +264,14 @@ function Product() {
         let paymenturl = response.data.data.url;
         setIsloading(false);
         window.location.href = paymenturl;
-        }
+      }
       else if (response?.data?.data?.order_id){
         sessionStorage.setItem('coupon',JSON.stringify(response.data.data))
         setIsloading(false);
-        navigate('/handlePayment',{state:{status:'success',message:response?.data?.message,id:offerId}})
+        setPaymnetStatus('success')
+        setPaymnetMessage(response?.data?.message)
+        
+        // navigate('/handlePayment',{state:{status:'success',message:response?.data?.message,id:offerId}})
           }
       else if(response?.data?.data?.errorstring === "Failed"){
         setIsloading(false);
@@ -252,7 +284,9 @@ function Product() {
       else if(response?.data?.status === 200){
         sessionStorage.setItem('coupon',JSON.stringify(response.data.data))
         setIsloading(false);
-        navigate('/handlePayment',{state:{status:'success',message:response?.data?.message,id:offerId}})
+        setPaymnetStatus('success')
+        setPaymnetMessage(response?.data?.message)
+        // navigate('/handlePayment',{state:{status:'success',message:response?.data?.message,id:offerId}})
       }
       else{
         setIsloading(false);
@@ -330,7 +364,7 @@ function Product() {
       }
       {offerdeets?.product_name &&
       <>
-      <div className="h-[15.5rem] top-0 relative mb-20">
+      <div className="h-[15.5rem] top-0 relative mb-[4.2rem]">
         {luma?
         <img src={Backwhite} className="absolute pt-3 ml-3 z-10" alt="back" onClick={()=>{navigate('/')}}/>  
         :
@@ -338,10 +372,10 @@ function Product() {
         }
 
         <div className='absolute -bottom-5 translate-y-1/2 right-1/2 translate-x-1/2 z-10  flex flex-col items-center'>
-          <div className="w-fit bg-white rounded-full p-3 aspect-square flex items-center shadow-lg">
+          <div className="w-fit bg-tranferent rounded-full p- aspect-square flex items-center shadow-md">
           <img src={offerdeets?.brand_logo} className="w-16" alt="" />
           </div>
-          <span className='font-sans font-[600] opacity-80 text-base text-customGray mt-2 h-5'>{offerdeets?.brand_name}</span>
+          <span className='font-sans font-[600] opacity-80 text-base text-customGray mt-1 h-5'>{offerdeets?.brand_name}</span>
         </div>
         
         <div className={`absolute w-screen -mt-10 h-72`} style={{ backgroundColor: `${offerdeets?.down_color}`}}>
@@ -357,9 +391,9 @@ function Product() {
       </div>
       </>
       }
-      <h1 className={`text-center w-full font-sans text-2xl font-semibold text-customGray pt-3`} >{offerdeets?.product_name}</h1>
+      <h1 className={`text-center w-full font-sans text-2xl font-semibold text-customGray pt-1`} >{offerdeets?.product_name}</h1>
       
-      <div className='text-2xl flex flex-wrap items-center py-2 px-2 justify-center font-semibold'>
+      <div className='text-2xl flex flex-wrap items-center py-1 px-2 justify-center font-semibold'>
       <span className={` font-bold z-10 text-black p1-2`}>
         <span className="line-through opacity-30 text-2xl">₹{ Number(offerdeets?.original_price).toFixed(0)}</span>
       </span>
@@ -370,7 +404,7 @@ function Product() {
           <span className="text-[#009A2B] font-bold ">Get for {Math.round(offerdeets?.offer_percentage)} OFF</span>
         }
       </div>
-      <span className='text-black w-full text-center font-bold text-3xl mt-2'>₹{offerdeets?.amount}</span>
+      <span className='text-black w-full text-center font-bold text-3xl mt-1'>₹{offerdeets?.amount}</span>
        {/* <span className='text-black w-full text-center font-bold text-2xl px-2'>
       {(offerdeets?.offer_type === '2')?
         <span>₹{(offerdeets?.original_price-((offerdeets?.offer_percentage*offerdeets?.original_price)/100)).toFixed(0)}</span>
@@ -379,7 +413,7 @@ function Product() {
         }
       </span> */}
       </div>
-      <div className="px-3 bg-[#F9F9F9]" style={{ height: `calc(100vh - 450px)` }}>
+      <div className="px-3 pt-1 rounded-t-2xl bg-[#F9F9F9]" style={{ height: `calc(100vh - 450px)` }}>
         <CustomCard 
           icon={voucher} 
           iconBg='#e6f5fd' 
@@ -496,7 +530,7 @@ function Product() {
           </div>
         </div>
         <div className="py-20"></div>
-          <div className="fixed bottom-0 left-0 w-full p-4 bg-white flex flex-row justify-between z-10 border border-t-4 h-fit rounded-t-2xl">
+          <div className="fixed bottom-0 left-0 w-full p-2 bg-white flex flex-row justify-between z-10 border border-t-4 h-fit rounded-t-2xl">
           <div className='flex flex-col justify-center '>
             <span className="font-bold line-through pr-2 opacity-40">₹{ Number(offerdeets?.original_price).toFixed(0)}</span>
             <div className="flex text-2xl font-bold w-fit text-customGray bg-white">
@@ -513,7 +547,7 @@ function Product() {
             <img src={paymentNext} className='pl-4'></img>
             </div>
           </div>
-          <div className="fixed bottom-0 left-0 w-full p-4 bg-white flex flex-row justify-between z-10 border border-t-4 h-fit rounded-t-2xl">
+          <div className="fixed bottom-0 left-0 w-full p-2 bg-white flex flex-row justify-between z-10 border border-t-4 h-fit rounded-t-2xl">
           <div className='flex flex-col justify-center '>
             <span className="font-bold line-through pr-2 opacity-40">₹{ Number(offerdeets?.original_price).toFixed(0)}</span>
             <div className="flex text-2xl font-bold w-fit text-customGray bg-white">
@@ -522,17 +556,16 @@ function Product() {
               :
               <span>₹ {offerdeets?.amount-(rewardApplied ? rewardAmountApplaied : 0)}</span>
             } 
-            <img src={paymentNext} className='pl-4'></img>
+            <img onClick={handleClickPay} src={paymentNext} className='pl-4'></img>
             </div>
           </div>
           <div className=''>
-            <Button onClick={handleClickPay} className="w-full bg-buttonBg text-lg font-medium capitalize">
-              Pay instantly
+            <Button onClick={handlePay} className="w-full bg-buttonBg text-lg font-medium capitalize">
+            Pay Now
             </Button>
           </div>
           </div>
           </div>
-        
       </div>
 
     <Dialog
@@ -623,7 +656,10 @@ function Product() {
     }} 
       open={billingDailog} onClose={() => setBillingDailog(false)} 
     />
-  </div>
+    {paymentStatus &&
+    <PaymentErrorHandler status={paymentStatus} message={paymentMessage} id={offerId}></PaymentErrorHandler>
+    }
+    </div>
   )
 }
 
