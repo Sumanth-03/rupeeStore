@@ -73,7 +73,7 @@ return(
       <>
       <Link onClick={()=>{onLinkClick(offer)}} to='/couponinfo'>
       <div className="border-2 border-solid-blue-950 solid-opacity-10 rounded-md h-fit mt-3 mb-2 flex">
-      <div className="w-28 h-32 border-[#D9D9D9] border-2 m-2 rounded-md flex justify-center">
+      <div className="w-28 h-32 min-w-28 border-[#D9D9D9] border-2 m-2 rounded-md flex justify-center">
       <div className="flex self-center p-2">
       <img src={offer?.coupon_page_logo} className="" alt="logo" />
       </div>
@@ -89,9 +89,10 @@ return(
         }
       <div className="opacity-60 text-[#021555] text-sm font-normal leading-snug tracking-wide">On min. purchase of ₹{offer.min_order} </div>
       {offer?.redeem_status !== 2 ? 
-        <div className="flex pt-2"><div className="text-[#021555] text-opacity-70 text-sm font-normal leading-snug tracking-wide">
-            Code: <span className="text-[#021555] text-opacity-70 text-sm font-semibold leading-snug tracking-wide">{offer.redeem_code}</span>
-            </div>
+            <div className="flex pt-2">
+              <div className="text-[#021555] text-opacity-70 text-sm font-normal leading-snug tracking-wide max-w-[75%] min-w-24 break-words">
+                Code: <span className="text-[#021555] text-opacity-70 text-sm font-semibold leading-snug tracking-wide">{offer.redeem_code}</span>
+              </div>
             <div>
               {(offer?.redeem_code !== 'pending') && <img src={clipboard} className="pl-1 -mt-1 h-5 z-30" alt="clipboard" onClick={() => {navigator.clipboard.writeText(offer.redeem_code)}}/>}
             </div>
