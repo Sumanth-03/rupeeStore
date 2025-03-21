@@ -394,9 +394,11 @@ function Product() {
       <h1 className={`text-center w-full font-sans text-2xl font-semibold text-[#000] pt-1`} >{offerdeets?.product_name}</h1>
       
       <div className='text-2xl flex flex-wrap items-center py-1 px-2 justify-center font-semibold'>
+      {(Number(offerdeets?.original_price).toFixed(0))>0 &&
       <span className={` font-bold z-10 text-black p1-2`}>
         <span className="line-through opacity-30 text-2xl">₹{ Number(offerdeets?.original_price).toFixed(0)}</span>
       </span>
+      }
       <div className="flex justify-center w-fit px-2 bg-white text-xl">
         {(offerdeets?.offer_type === '2')?
           <span className="text-[#009A2B] font-bold ">Get for {Math.round(offerdeets?.offer_percentage)}% OFF</span>
@@ -549,7 +551,9 @@ function Product() {
           </div>
           <div className="fixed bottom-0 left-0 w-full p-2 bg-white flex flex-row justify-between z-10 border border-t-4 h-fit rounded-t-2xl">
           <div className='flex flex-col justify-center '>
-            <span className="font-bold line-through pr-2 opacity-40">₹{ Number(offerdeets?.original_price).toFixed(0)}</span>
+            {(Number(offerdeets?.original_price).toFixed(0))>0 &&
+              <span className="font-bold line-through pr-2 opacity-40">₹{ Number(offerdeets?.original_price).toFixed(0)}</span>
+            }
             <div className="flex text-2xl font-bold w-fit text-[#000] bg-white">
             {(offerdeets?.offer_type === '2')?
               <span>₹ {offerdeets?.amount-(rewardApplied ? rewardAmountApplaied : 0)}</span>
