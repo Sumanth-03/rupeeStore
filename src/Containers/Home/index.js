@@ -345,7 +345,7 @@ function Home() {
             onClick={() => setActiveTab(id)}
             className={activeTab === id ? "text-slate-700 text-xs font-normal " : "mb-[10px] text-slate-300 opacity-80 text-xs font-normal "}
           >
-            <div className={`${activeTab !== id ? 'shadow-[4px_4px_10px_rgba(0,0,0,0.1),-4px_4px_10px_rgba(0,0,0,0.1)]': ''} p-2 px-4 rounded-xl w-[120px]`}>
+            <div className={`${activeTab !== id ? 'shadow-[4px_4px_10px_rgba(0,0,0,0.1),-4px_4px_10px_rgba(0,0,0,0.1)]': ''} p-2 px-4 rounded-xl w-[120px] min-w-fit`}>
               <span className=" font-medium text-base">{category_name}</span>
             </div>
           </Tab>
