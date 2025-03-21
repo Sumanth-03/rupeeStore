@@ -37,11 +37,11 @@ function PaymentErrorHandler (props) {
     useEffect(()=>{
         setTimeout(()=>{
             handleNavigate(status,id)
-        },2000)
+        },1000)
     })
     console.log(status,bgcolors[status]?.[0])
     return(
-        <main className="fixed inset-0 w-screen h-screen bg-black/30 backdrop-blur-md flex items-center justify-center z-50">
+        <main className="fixed inset-0 w-screen h-screen bg-black/70 backdrop-blur-md flex items-center justify-center z-50">
             <div className="bg-white shadow-[0px_0px_15px_#cccccc] flex flex-col items-center justify-center gap-6 mx-2 rounded-2xl p-3 py-5">
             <div className={`p-4 rounded-full bg-[${bgcolors[status]?.[0]}]`} style={{backgroundColor:`${bgcolors[status]?.[0]}`}}>
                 <div className={`p-4 rounded-full bg-[${bgcolors[status]?.[1]}]`} style={{backgroundColor:`${bgcolors[status]?.[1]}`}}>

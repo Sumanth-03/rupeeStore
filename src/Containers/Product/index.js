@@ -435,7 +435,7 @@ function Product() {
           {coupon.code ? 
           <span className='text-[#EA655E] text-lg' onClick={()=>setCoupon({})}>Remove</span>
           :
-          <Button onClick={()=>setCouponDailog(true)} className='bg-white border-none shadow-none w-fit p-0'><img src={backdark} className='rotate-180 w-3'></img></Button>
+          <Button className='bg-white border-none shadow-none w-fit p-0'><img src={backdark} className='rotate-180 w-3'></img></Button>
           }
         </CustomCard>
         <CustomCard icon={coin} iconBg='#FCF8De' 
@@ -556,7 +556,7 @@ function Product() {
               :
               <span>₹ {offerdeets?.amount-(rewardApplied ? rewardAmountApplaied : 0)}</span>
             } 
-            <img onClick={handleClickPay} src={paymentNext} className='pl-4'></img>
+            <img onClick={handleClickPay} src={backdark} className='rotate-180 ml-4'></img>
             </div>
           </div>
           <div className=''>
