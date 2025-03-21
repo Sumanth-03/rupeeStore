@@ -393,7 +393,7 @@ function Product() {
       </>
       }
       <h1 className={`text-center w-full font-sans text-2xl font-semibold text-[#000] pt-1`} >{offerdeets?.product_name}</h1>
-      
+      {(offerdeets?.offer_type === '2') &&
       <div className='text-2xl flex flex-wrap items-center py-1 px-2 justify-center font-semibold'>
       {(Number(offerdeets?.original_price).toFixed(0))>0 &&
       <span className={` font-bold z-10 text-black p1-2`}>
@@ -415,7 +415,7 @@ function Product() {
         <span>₹{Number(offerdeets?.original_price-offerdeets?.offer_percentage).toFixed(0)}</span>
         }
       </span> */}
-      </div>
+      </div> }
       <div className="px-3 pt-1 rounded-t-2xl bg-[#F9F9F9]" style={{ height: `calc(100vh - 450px)` }}>
         <CustomCard 
           icon={voucher} 
