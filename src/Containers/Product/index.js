@@ -417,7 +417,7 @@ function Product() {
       </span> */}
       </div> }
       <div className="px-3 pt-1 rounded-t-2xl bg-[#F9F9F9]" style={{ height: `calc(100vh - 450px)` }}>
-        <CustomCard 
+        {/*<CustomCard 
           icon={voucher} 
           iconBg='#e6f5fd' 
           text={coupon.code ?
@@ -440,7 +440,7 @@ function Product() {
           :
           <Button className='bg-white border-none shadow-none w-fit p-0'><img src={backdark} className='rotate-180 w-3'></img></Button>
           }
-        </CustomCard>
+        </CustomCard>*/}
         <CustomCard icon={coin} iconBg='#FCF8De' 
         text={
           <div className='flex flex-col'>{console.log(selectedAddress)}
