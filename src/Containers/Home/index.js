@@ -370,13 +370,16 @@ function Home() {
               <div className={`h-60 w-11/12 rounded-lg border border-gray-300 flex justify-center overflow-clip`} style={{ backgroundColor: `${offer?.down_color}`}}>
               <div className="absolute top-0 z-10 rounded-full"><img src={offer?.brand_logo} className="p-1 w-16 h-16" alt="logo" /></div>
               <div className="absolute top-14 h-12 w-10/12 flex justify-center"><span className={`font-bold leading-none line-clamp-2 z-10 flex self-center text-center pb-1 ${(offer?.product_name.length > 13)?'text-base ':'text-lg'} ${(lumaCalculate(offer?.up_color) < 200)?'text-white':'text-black'}`}>{offer?.product_name}</span></div>
-              <div className={`absolute z-10 ${(offer?.product_name.length < 16)?'top-24':'top-24'}`}>
+              <div className={`absolute z-10 ${(offer?.product_name.length < 16)?'top-24':'top-[6.5rem]'}`}>
               <div className="z-10 flex justify-center w-fit h-7 rounded-lg px-2 px-4 relative">
-              {(offer?.offer_type === '2')?
+              {offer?.brand_name=== 'Lenskart' &&
+                <span className="z-10 relative text-[#27374D] font-semibold text-sm p-1">Get for ₹1</span>
+              }
+              {offer?.brand_name !== 'Lenskart' && ((offer?.offer_type === '2') ?
               <span className="z-10 relative text-[#27374D] font-semibold text-sm p-1">{offer?.uptoflat === "1"?'UP TO':'FLAT'} { Math.round(offer?.offer_percentage)}% OFF</span>
               :
               <span className="z-10 relative text-[#27374D] font-semibold text-sm p-1">{offer?.uptoflat === "1"?'UP TO':'FLAT'} {Math.round(offer?.offer_percentage)} OFF</span>
-              }
+              )}
               <img className='z-0 absolute w-full h-full' src={offerBg}></img>
               </div>
               </div>

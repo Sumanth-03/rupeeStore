@@ -381,7 +381,7 @@ function Product() {
         
         <div className={`absolute w-screen -mt-10 h-72`} style={{ backgroundColor: `${offerdeets?.down_color}`}}>
           <div className={`relative w-screen -mt-10 h-44 rounded-br-[30px]`} style={{ backgroundColor: `${offerdeets?.up_color}`}}></div>
-            <div className={`relative w-screen -mt-10 h-44 rounded-bl-[260px] rounded-br-[310px]`} style={{ backgroundColor: `${offerdeets?.up_color}`}}>
+            <div className={`relative w-screen -mt-11 h-44 rounded-bl-[260px] rounded-br-[310px]`} style={{ backgroundColor: `${offerdeets?.up_color}`}}>
             <div className="absolute  left-1/2 -translate-x-1/2 bottom-5">
               <img src={offerdeets?.product_pic} className="w-48 h-48" alt="" />
             </div>
@@ -393,21 +393,21 @@ function Product() {
       </>
       }
       <h1 className={`text-center w-full font-sans text-2xl font-semibold text-[#000] pt-1`} >{offerdeets?.product_name}</h1>
-      {(offerdeets?.offer_type === '2') &&
+      {true &&
       <div className='text-2xl flex flex-wrap items-center py-1 px-2 justify-center font-semibold'>
       {(Number(offerdeets?.original_price).toFixed(0))>0 &&
       <span className={` font-bold z-10 text-black p1-2`}>
         <span className="line-through opacity-30 text-2xl">₹{ Number(offerdeets?.original_price).toFixed(0)}</span>
       </span>
       }
-      <div className="flex justify-center w-fit px-2 bg-white text-xl">
+      {/* <div className="flex justify-center w-fit px-2 bg-white text-xl">
         {(offerdeets?.offer_type === '2')?
           <span className="text-[#009A2B] font-bold ">Get for {Math.round(offerdeets?.offer_percentage)}% OFF</span>
           :
           <span className="text-[#009A2B] font-bold ">Get for {Math.round(offerdeets?.offer_percentage)} OFF</span>
         }
-      </div>
-      <span className='text-black w-full text-center font-bold text-3xl mt-1'>₹{offerdeets?.amount}</span>
+      </div> */}
+      <span className='text-black text-center font-bold text-3xl ml-1'>₹{offerdeets?.amount}</span>
        {/* <span className='text-black w-full text-center font-bold text-2xl px-2'>
       {(offerdeets?.offer_type === '2')?
         <span>₹{(offerdeets?.original_price-((offerdeets?.offer_percentage*offerdeets?.original_price)/100)).toFixed(0)}</span>
@@ -496,20 +496,8 @@ function Product() {
         {addresserror &&
           <p className=' text-red-600  p-1 rounded-md my-1 -mt-1 text-sm pl-2'>Please select an address.</p>
         }
-        
-        <div className="border-2 border-solid-blue-950 solid-opacity-10 rounded-xl shadow-md h-fit mt-3 p-2 pb-2 bg-[#FFFFFF]">
-          <div className="text-[#000] text-xl font-medium tracking-wide pl-2 py-3">Details</div>
-          <div className="list-decimal text-[#000] text-sm font-normal pl-2">
-            <ul className="pl-5 list-decimal font-sans">
-            <li className="pb-3">Avail the deal by redeeming your points</li>
-            <li className="pb-3">You will get a coupon code.</li>
-            <li className="pb-3">Click on 'Redeem Now' and you will be redirected to the brand website</li>
-            <li className="pb-3">Add product to cart and apply the coupon code during checkout.</li>
-            </ul>
-          </div>
-        </div>
 
-        <div className="border-2 border-solid-blue-950 solid-opacity-10 rounded-xl shadow-md h-fit mt-3 p-2 pb-2 bg-[#FFFFFF]">
+<div className="border-2 border-solid-blue-950 solid-opacity-10 rounded-xl shadow-md h-fit mt-3 p-2 pb-2 bg-[#FFFFFF]">
           <div className="text-[#000] text-xl font-medium tracking-wide pl-2 py-3">Terms and Conditions</div>
           <div className="text-[#000] text-sm font-normal pl-2">
             {tnc &&
@@ -532,6 +520,19 @@ function Product() {
             }
           </div>
         </div>
+        
+        <div className="border-2 border-solid-blue-950 solid-opacity-10 rounded-xl shadow-md h-fit mt-3 p-2 pb-2 bg-[#FFFFFF]">
+          <div className="text-[#000] text-xl font-medium tracking-wide pl-2 py-3">How to redeem</div>
+          <div className="list-decimal text-[#000] text-sm font-normal pl-2">
+            <ul className="pl-5 list-decimal font-sans">
+            <li className="pb-3">Avail the deal by redeeming your points</li>
+            <li className="pb-3">You will get a coupon code.</li>
+            <li className="pb-3">Click on 'Redeem Now' and you will be redirected to the brand website</li>
+            <li className="pb-3">Add product to cart and apply the coupon code during checkout.</li>
+            </ul>
+          </div>
+        </div>
+        
         <div className="py-20"></div>
           <div className="fixed bottom-0 left-0 w-full p-2 bg-white flex flex-row justify-between z-10 border border-t-4 h-fit rounded-t-2xl">
           <div className='flex flex-col justify-center '>
