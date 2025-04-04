@@ -416,6 +416,7 @@ function Product() {
         }
       </span> */}
       </div> }
+      {offerdeets?.brand_name=== 'Lenskart' && <p className='text-center text-xs'> *convenience fee of ₹49 will be applied at checkout on Lenskart.com</p>}
       <div className="px-3 pt-1 rounded-t-2xl bg-[#F9F9F9]" style={{ height: `calc(100vh - 450px)` }}>
         {/*<CustomCard 
           icon={voucher} 
