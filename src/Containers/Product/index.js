@@ -523,7 +523,7 @@ function Product() {
         </div>
         
         <div className="border-2 border-solid-blue-950 solid-opacity-10 rounded-xl shadow-md h-fit mt-3 p-2 pb-2 bg-[#FFFFFF]">
-          <div className="text-[#000] text-xl font-medium tracking-wide pl-2 py-3">How to redeem</div>
+          <div className="text-[#000] text-xl font-medium tracking-wide pl-2 py-3">How to Redeem</div>
           <div className="list-decimal text-[#000] text-sm font-normal pl-2">
             <ul className="pl-5 list-decimal font-sans">
             <li className="pb-3">Avail the deal by redeeming your points</li>
