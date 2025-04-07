@@ -457,7 +457,7 @@ function Product() {
         }
         >
           <Switch
-          disabled = {rewardAmountApplaied === 0}
+          disabled //= {rewardAmountApplaied === 0}
           checked={rewardApplied}
           onClick={()=>setRewardApplied((pre)=>!pre)}
           id="custom-switch-component"
