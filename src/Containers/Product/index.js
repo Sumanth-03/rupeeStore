@@ -392,8 +392,8 @@ function Product() {
       </div>
       </>
       }
-      <h1 className={`text-center w-full font-sans text-2xl font-semibold text-[#000] pt-1`} >{offerdeets?.product_name}</h1>
-      {true &&
+      <h1 className={`text-center w-full font-sans text-2xl font-semibold text-[#000] pt-1 px-3`} >{offerdeets?.brand_description}</h1>
+      {false &&
       <div className='text-2xl flex flex-wrap items-center py-1 px-2 justify-center font-semibold'>
       {(Number(offerdeets?.original_price).toFixed(0))>0 &&
       <span className={` font-bold z-10 text-black p1-2`}>

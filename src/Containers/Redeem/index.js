@@ -187,7 +187,7 @@ function Product() {
       
       <>
         <div className='flex flex-col gap-2'>
-        <h1 className={`text-center w-full font-sans text-2xl font-bold text-[#000] pt-1`} >{orderDetails?.product_name}</h1>
+        <h1 className={`text-center w-full font-sans text-2xl font-bold text-[#000] pt-1 px-3`} >{orderDetails?.brand_description}</h1>
         { !productDeliverable && 
         <>
           <p className='text-center text-base font-semibold text-[#000] font-sans '>
