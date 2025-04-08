@@ -1,6 +1,6 @@
 import axios from "axios"
 
-const apiBaseUrl = "https://onerupee-store-api-stage.azurewebsites.net/api"; //"http://localhost:9000/api"; //"https://onerupee-store-api-stage.azurewebsites.net/api";
+const apiBaseUrl = "https://onerupee-store-api-prod.azurewebsites.net/api";//"https://onerupee-store-api-stage.azurewebsites.net/api"; //"http://localhost:9000/api"; //"https://onerupee-store-api-stage.azurewebsites.net/api";
       //"https://onerupee-store-api-prod.azurewebsites.net/api";
 
 const apiBaseUrlCheggout = 'https://restapi-stage.cheggout.com/api/v1.3/GetScratchCardDetails?id='; //'https://restapi.cheggout.com/api/v1.3/GetScratchCardDetails?id=CAMPAIGN_HOTDEALS_POINTS_FEB25';
